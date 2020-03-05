@@ -25,8 +25,10 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
     // - Add a way to get input/output blocks from said channel
 
     private Block[] getConnectedBlocks() {
-        ArrayDeque<BlockPos> toSearch = new ArrayDeque<>(pos);
-        List<BlockPos> searched = new ArrayList<>(pos);
+        ArrayDeque<BlockPos> toSearch = new ArrayDeque<BlockPos>();
+        toSearch.push(pos);
+        List<BlockPos> searched = new ArrayList<>();
+        searched.add(pos);
         List<BlockPos> providers = new ArrayList<>();
         while (!toSearch.isEmpty()){
             BlockPos p = toSearch.removeFirst();
