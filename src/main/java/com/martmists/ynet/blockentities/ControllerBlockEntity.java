@@ -25,25 +25,25 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
     // - Add a way to get input/output blocks from said channel
 
     private Block[] getConnectedBlocks() {
-        List<BlockPos> searched = new ArrayList<>();
+        ArrayDeque<BlockPos> toSearch = new ArrayDeque<>(pos);
+        List<BlockPos> searched = new ArrayList<>(pos);
         List<BlockPos> providers = new ArrayList<>();
-        searched.add(pos);
-        findNeighbors(world, pos, searched, providers);
-        return (Block[]) providers.stream().map(p -> world.getBlockState(p).getBlock()).toArray();
-    }
-
-    private static void findNeighbors(BlockView world, BlockPos p, List<BlockPos> searched, List<BlockPos> providers) {
-        List<BlockPos> toSearch = Arrays.asList(p.up(), p.down(), p.north(), p.south(), p.east(), p.west());
-        for (BlockPos bp : toSearch) {
-            searched.add(bp);
-            Block block = world.getBlockState(bp).getBlock();
-            if (block instanceof BaseProvider){
-                providers.add(bp);
-            }
-            if (block instanceof CableBlock || block instanceof ConnectorBlock){
-                findNeighbors(world, bp, searched, providers);
+        while (!toSearch.isEmpty()){
+            BlockPos p = toSearch.removeFirst();
+            for (BlockPos p2 : Arrays.asList(p.up(), p.down(), p.north(), p.south(), p.east(), p.west())) {
+                if (searched.contains(p2)) {
+                    continue;
+                }
+                searched.add(p2);
+                Block b = world.getBlockState(p2).getBlock();
+                if (b == YNetMod.CABLE || b == YNetMod.CONNECTOR) {
+                    toSearch.add(p2);
+                } else if (b instanceof BaseProvider) {
+                    providers.add(p2);
+                }
             }
         }
+        return (Block[]) providers.stream().map(p -> world.getBlockState(p).getBlock()).toArray();
     }
 
     @Override

@@ -15,9 +15,13 @@
     ]
   },
   "mixins": [
-    "mod.mixins.json"
+    "mod.mixins.json",
+    "tr.mod.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.4.0"
+  },
+  "suggests": {
+    "techreborn": "*"
   }
 }

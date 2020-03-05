@@ -3,7 +3,9 @@
   "package": "com.martmists.ynet.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ChestBlockEntityMixin"
+    "accessors.InventoryStacksAccessor",
+    "providers.item.AbstractFurnaceBlockMixin",
+    "providers.item.LootableContainerBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

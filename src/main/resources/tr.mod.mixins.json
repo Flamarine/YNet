@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "package": "com.martmists.ynet.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "providers.energy.PowerAcceptorMixin",
+    "providers.item.GenericMachineBlockMixin"
+  ],
+  "plugin": "com.martmists.ynet.plugin.TRPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

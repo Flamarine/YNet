@@ -65,7 +65,7 @@ public class ConnectorBlock extends ConnectingBlock {
             return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
         } else {
             Block block = neighborState.getBlock();
-            return state.with(FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CABLE || block instanceof BaseProvider);
+            return state.with(FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CABLE || block == YNetMod.CONTROLLER || block instanceof BaseProvider);
         }
     }
 
@@ -88,12 +88,12 @@ public class ConnectorBlock extends ConnectingBlock {
         Block block5 = world.getBlockState(pos.south()).getBlock();
         Block block6 = world.getBlockState(pos.west()).getBlock();
         return this.getDefaultState()
-                .with(DOWN, block == this || block == YNetMod.CABLE || block instanceof BaseProvider)
-                .with(UP, block2 == this || block2 == YNetMod.CABLE || block2 instanceof BaseProvider)
-                .with(NORTH, block3 == this || block3 == YNetMod.CABLE || block3 instanceof BaseProvider)
-                .with(EAST, block4 == this || block4 == YNetMod.CABLE || block4 instanceof BaseProvider)
-                .with(SOUTH, block5 == this || block5 == YNetMod.CABLE || block5 instanceof BaseProvider)
-                .with(WEST, block6 == this || block6 == YNetMod.CABLE || block6 instanceof BaseProvider);
+                .with(DOWN, block == this || block == YNetMod.CABLE || block == YNetMod.CONTROLLER || block instanceof BaseProvider)
+                .with(UP, block2 == this || block2 == YNetMod.CABLE || block2 == YNetMod.CONTROLLER || block2 instanceof BaseProvider)
+                .with(NORTH, block3 == this || block3 == YNetMod.CABLE || block3 == YNetMod.CONTROLLER || block3 instanceof BaseProvider)
+                .with(EAST, block4 == this || block4 == YNetMod.CABLE || block4 == YNetMod.CONTROLLER || block4 instanceof BaseProvider)
+                .with(SOUTH, block5 == this || block5 == YNetMod.CABLE || block5 == YNetMod.CONTROLLER || block5 instanceof BaseProvider)
+                .with(WEST, block6 == this || block6 == YNetMod.CABLE || block6 == YNetMod.CONTROLLER || block6 instanceof BaseProvider);
     }
 
     @Override
