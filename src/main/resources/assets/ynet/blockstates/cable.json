@@ -1,0 +1,64 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "ynet:block/cable"
+      }
+    },
+    {
+      "when": {
+        "north": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "east": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "south": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "west": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "down": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side"
+      }
+    }
+  ]
+}

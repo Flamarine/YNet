@@ -1,0 +1,25 @@
+buildscript {
+	dependencies {
+		classpath "net.fabricmc:fabric-loom:0.2.7-SNAPSHOT"
+	}
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		gradlePluginPortal()
+	}
+}
+
+apply plugin: "idea"
+
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'https://jitpack.io'
+	}
+}

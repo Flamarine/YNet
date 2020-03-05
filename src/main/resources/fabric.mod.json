@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "ynet",
+  "version": "${version}",
+  "name": "YNet",
+  "description": "Fabric port of XNet",
+  "authors": [
+    "Martmists"
+  ],
+  "license": "MIT",
+  "icon": "assets/lgr/icon.png",
+  "entrypoints": {
+    "main": [
+      "com.martmists.ynet.YNetMod"
+    ]
+  },
+  "mixins": [
+    "mod.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.4.0"
+  }
+}
