@@ -19,7 +19,7 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public int getItemInputCount(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStacks();
+        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
         if (stacks.stream().anyMatch(ItemStack::isEmpty)) {
             return itemStack.getMaxCount();
         }
@@ -34,7 +34,7 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public void inputItem(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStacks();
+        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
         int inputCount = itemStack.getCount();
         for (ItemStack stack : stacks) {
             if (stack.getItem() == itemStack.getItem()){
@@ -61,12 +61,12 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public ItemStack[] getItemOutputStacks(BlockView world, BlockPos pos) {
-        return ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStacks().stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
+        return ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList().stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
     }
 
     @Override
     public void outputItem(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStacks();
+        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
         int outputCount = itemStack.getCount();
         int i = 0;
         for (ItemStack stack : stacks){

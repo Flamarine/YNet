@@ -3,11 +3,13 @@ package com.martmists.ynet;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.api.EnergyProvider;
 import com.martmists.ynet.api.ItemProvider;
+import com.martmists.ynet.blockentities.ConnectorBlockEntity;
 import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.blocks.CableBlock;
 import com.martmists.ynet.blocks.ConnectorBlock;
 import com.martmists.ynet.blocks.ControllerBlock;
 import com.martmists.ynet.event.ProviderTickCallback;
+import com.martmists.ynet.network.ConnectorConfiguration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.block.Block;
@@ -19,11 +21,14 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.SimpleRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class YNetMod implements ModInitializer {
     public static ItemGroup YNET_GROUP = FabricItemGroupBuilder.build(
@@ -36,6 +41,11 @@ public class YNetMod implements ModInitializer {
     );
     public static CableBlock CABLE = register("cable", new CableBlock(Block.Settings.of(Material.METAL)));
     public static ConnectorBlock CONNECTOR = register("connector", new ConnectorBlock(Block.Settings.of(Material.METAL)));
+    public static BlockEntityType<ConnectorBlockEntity> CONNECTOR_BE = Registry.register(
+            Registry.BLOCK_ENTITY_TYPE,
+            new Identifier("ynet", "connector"),
+            BlockEntityType.Builder.create(ConnectorBlockEntity::new, CONNECTOR).build(null)
+    );
     public static ControllerBlock CONTROLLER = register("controller", new ControllerBlock(Block.Settings.of(Material.METAL)));
     public static BlockEntityType<ControllerBlockEntity> CONTROLLER_BE = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
@@ -49,17 +59,19 @@ public class YNetMod implements ModInitializer {
     @Override
     public void onInitialize() {
         System.out.println("YNet loaded!");
-        register("ynet:item", ItemProvider.class, (ItemProvider[] listeners, ControllerBlockEntity be) -> {
+        register("ynet:item", ItemProvider.class, (listeners, be) -> {
             // TODO:
             // - Get matching channels from ControllerBlockEntity
-            // - Find a way to route all items (+ filters?
-            return ActionResult.SUCCESS;
+            // - Find a way to route all items (+ filters?)
+
         });
-        register("ynet:energy", EnergyProvider.class, (EnergyProvider[] listeners, ControllerBlockEntity be) -> {
+        register("ynet:energy", EnergyProvider.class, (listeners, be) -> {
             // TODO:
             // - Get matching channels from ControllerBlockEntity
             // - Find a way to route all energy
-            return ActionResult.SUCCESS;
+            Set<ConnectorConfiguration> takeEnergy = listeners.stream().filter(config -> config.state == ConnectorConfiguration.State.INPUT).collect(Collectors.toSet());
+            Set<ConnectorConfiguration> giveEnergy = listeners.stream().filter(config -> config.state == ConnectorConfiguration.State.OUTPUT).collect(Collectors.toSet());
+
         });
         // TODO:
         // - Add support for configuring redstone signals on connectors

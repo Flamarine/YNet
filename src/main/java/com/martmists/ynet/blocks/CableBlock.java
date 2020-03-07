@@ -2,17 +2,26 @@ package com.martmists.ynet.blocks;
 
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
+import com.martmists.ynet.blockentities.ControllerBlockEntity;
+import com.martmists.ynet.network.Network;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class CableBlock extends ConnectingBlock {
     public CableBlock(Settings settings) {
@@ -45,6 +54,39 @@ public class CableBlock extends ConnectingBlock {
         } else {
             Block block = neighborState.getBlock();
             return state.with(FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CONNECTOR || block instanceof BaseProvider);
+        }
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        Set<BlockPos> controllers = new HashSet<>();
+
+        // No longer connected, check all neighbors
+        Network.getConnectedControllers(world, pos, controllers);
+
+        System.out.println("Controllers: " + controllers);  // Empty?
+        for (BlockPos p : controllers){
+            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
+            be.updateNetwork();
+        }
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+        Set<BlockPos> controllers = new HashSet<>();
+
+        // TODO: Find a better way to do this instead of a BFS through the world
+        Network.getConnectedControllers(world, pos, controllers);
+
+        System.out.println("Controllers: " + controllers);
+        for (BlockPos p : controllers){
+            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
+            // be.network.cables.add(p);
+            Set<BlockPos> known = new HashSet<>();
+            known.addAll(be.network.cables);
+            known.addAll(be.network.connectors);
+            Network.getConnectedBlocks(world, pos, known, be.network.cables, be.network.connectors);
         }
     }
 

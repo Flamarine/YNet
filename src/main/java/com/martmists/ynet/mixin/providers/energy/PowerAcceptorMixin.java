@@ -8,11 +8,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import team.reborn.energy.EnergySide;
 import techreborn.blocks.GenericMachineBlock;
+import techreborn.blocks.generator.BlockSolarPanel;
 import techreborn.blocks.generator.GenericGeneratorBlock;
 import techreborn.blocks.storage.energy.EnergyStorageBlock;
 
 
-@Mixin({GenericMachineBlock.class, GenericGeneratorBlock.class, EnergyStorageBlock.class})
+@Mixin({GenericMachineBlock.class, GenericGeneratorBlock.class, EnergyStorageBlock.class, BlockSolarPanel.class})
 public class PowerAcceptorMixin implements EnergyProvider {
     @Override
     public double getEnergyInputLimit(BlockView world, BlockPos pos) {

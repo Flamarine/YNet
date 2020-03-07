@@ -1,0 +1,119 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "ynet:block/cable"
+      }
+    },
+    {
+      "when": {
+        "north": true
+      },
+      "apply": {
+        "model": "ynet:block/connector",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "east": true
+      },
+      "apply": {
+        "model": "ynet:block/connector",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "south": true
+      },
+      "apply": {
+        "model": "ynet:block/connector",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "west": true
+      },
+      "apply": {
+        "model": "ynet:block/connector",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": true
+      },
+      "apply": {
+        "model": "ynet:block/connector",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "down": true
+      },
+      "apply": {
+        "model": "ynet:block/connector"
+      }
+    },
+    {
+      "when": {
+        "north_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "east_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "south_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "west_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "down_cable": true
+      },
+      "apply": {
+        "model": "ynet:block/cable_side"
+      }
+    }
+  ]
+}
