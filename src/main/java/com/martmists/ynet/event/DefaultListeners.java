@@ -35,14 +35,22 @@ public class DefaultListeners {
 
             if (lastStored >= receiver.getEnergyInputLimit(world, receiverConfig.providerPos)) {
                 lastStored = 0.0;
-                receiverConfig = takeEnergy.get(1);
+                try {
+                    receiverConfig = takeEnergy.get(1);
+                } catch (IndexOutOfBoundsException exc) {
+                    break;
+                }
                 receiver = (EnergyProvider) world.getBlockState(receiverConfig.providerPos);
                 takeEnergy.remove(0);
             }
 
             if (lastTaken >= provider.getEnergyOutputLimit(world, providerConfig.providerPos)) {
                 lastTaken = 0.0;
-                providerConfig = giveEnergy.get(1);
+                try {
+                    providerConfig = giveEnergy.get(1);
+                } catch (IndexOutOfBoundsException exc) {
+                    break;
+                }
                 provider = (EnergyProvider) world.getBlockState(providerConfig.providerPos);
                 giveEnergy.remove(0);
             }
@@ -72,7 +80,6 @@ public class DefaultListeners {
             }
         }
 
-        // TODO: Figure this shit out
         World world = be.getWorld();
         List<ConnectorConfiguration> takeItems = listeners.stream()
                 .filter(config -> config.state == ConnectorConfiguration.State.INPUT)
@@ -96,22 +103,45 @@ public class DefaultListeners {
         Entry e = entries.get(0);
 
         Map<ItemProvider, Integer> itemsStored = new HashMap<>();
+        Map<ItemProvider, Integer> itemsRemoved = new HashMap<>();
 
         while (!entries.isEmpty()) {
             if (e.items.getCount() <= 0){
-                e = entries.get(1);
+                try {
+                    e = entries.get(1);
+                } catch (IndexOutOfBoundsException exc) {
+                    break;
+                }
                 entries.remove(0);
             }
 
+            itemsRemoved.putIfAbsent(e.provider, 0);
+
+            if (itemsRemoved.get(e.provider) >= 64) {
+                e.items.setCount(0);
+                continue;
+            }
+
             boolean found = false;
-            for (ConnectorConfiguration  receiverConfig : takeItems){
+            for (ConnectorConfiguration receiverConfig : takeItems){
                 ItemProvider receiver = (ItemProvider) world.getBlockState(receiverConfig.providerPos);
                 itemsStored.putIfAbsent(receiver, 0);
-                int count = receiver.getItemInputCount(world, receiverConfig.providerPos, e.items);
+                int count = Math.min(
+                        receiver.getItemInputCount(world, receiverConfig.providerPos, e.items),
+                        Math.min(
+                                64 - itemsStored.get(receiver),
+                                64 - itemsRemoved.get(e.provider)));
+
+                if (receiverConfig.filter != null) {
+                    Entry fe = e;
+                    if (Arrays.stream(receiverConfig.filter).noneMatch((item) -> item == fe.items.getItem())){
+                        continue;
+                    }
+                }
+
                 if (count > 0){
-                    // TODO: Ensure we don't input more than 64 items per receiver
-                    // We can remove these ItemProviders
-                    // Also: Use filters
+                    itemsStored.put(receiver, itemsStored.get(receiver) + count);
+                    itemsRemoved.put(e.provider, itemsRemoved.get(e.provider) + count);
                     int finalCount = e.items.getCount() - count;
                     e.items.setCount(count);
                     e.provider.outputItem(world, e.pos, e.items);
