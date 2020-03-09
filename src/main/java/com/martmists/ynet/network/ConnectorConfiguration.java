@@ -7,6 +7,8 @@ public class ConnectorConfiguration {
     public State state = State.DISABLED;
     public BlockPos providerPos;
     public int priority;
+
+    // For items
     public Item[] filter;
 
     public static enum State {

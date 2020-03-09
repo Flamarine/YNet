@@ -10,11 +10,77 @@ import net.minecraft.world.BlockView;
 import java.util.*;
 
 public class Network {
+    private static Map<BlockPos, Network> networks = new HashMap<>();
+
     private BlockPos controller;
     public Set<BlockPos> cables;
     public Set<BlockPos> connectors;
 
-    public void reloadAllNodes(BlockView world) {
+    public synchronized static void removeCable(BlockView world, BlockPos p) {
+        for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
+            Network n = e.getValue();
+            if (n.cables.contains(p)) {
+                System.out.println("Reloading nodes for network " + n);
+                n.reloadAllNodes(world);
+                System.out.println("Done reloading nodes");
+            }
+        }
+    }
+
+    public synchronized static void removeConnector(BlockView world, BlockPos p) {
+        for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
+            Network n = e.getValue();
+            if (n.connectors.contains(p)) {
+                System.out.println("Reloading nodes for network " + n);
+                n.reloadAllNodes(world);
+                System.out.println("Done reloading nodes");
+            }
+        }
+    }
+
+    public synchronized static void addCable(BlockView world, BlockPos p) {
+        Set<Network> connectedNetworks = new HashSet<>();
+        for (BlockPos pos : new BlockPos[]{ p.up(), p.down(), p.north(), p.east(), p.south(), p.west() }){
+            for (Map.Entry<BlockPos, Network> e : networks.entrySet()){
+                Network n = e.getValue();
+                if (n.connectors.contains(pos) || n.cables.contains(pos)){
+                    connectedNetworks.add(n);
+                }
+            }
+        }
+        for (Network n : connectedNetworks) {
+            n.cables.add(p);
+            Set<BlockPos> known = new HashSet<>();
+            known.addAll(n.cables);
+            known.addAll(n.connectors);
+            System.out.println("Loading new nodes for network " + n);
+            getConnectedBlocks(world, p, known, n.cables, n.connectors);
+            System.out.println("Done reloading nodes");
+        }
+    }
+
+    public synchronized static void addConnector(BlockView world, BlockPos p) {
+        Set<Network> connectedNetworks = new HashSet<>();
+        for (BlockPos pos : new BlockPos[]{ p.up(), p.down(), p.north(), p.east(), p.south(), p.west() }){
+            for (Map.Entry<BlockPos, Network> e : networks.entrySet()){
+                Network n = e.getValue();
+                if (n.connectors.contains(pos) || n.cables.contains(pos)){
+                    connectedNetworks.add(n);
+                }
+            }
+        }
+        for (Network n : connectedNetworks) {
+            n.connectors.add(p);
+            Set<BlockPos> known = new HashSet<>();
+            known.addAll(n.cables);
+            known.addAll(n.connectors);
+            System.out.println("Loading new nodes for network " + n);
+            getConnectedBlocks(world, p, known, n.cables, n.connectors);
+            System.out.println("Done reloading nodes");
+        }
+    }
+
+    public synchronized void reloadAllNodes(BlockView world) {
         cables = new HashSet<>();
         connectors = new HashSet<>();
         ControllerBlockEntity be = ((ControllerBlockEntity)world.getBlockEntity(controller));
@@ -57,29 +123,9 @@ public class Network {
         }
     }
 
-    public static void getConnectedControllers(BlockView world, BlockPos origin, Set<BlockPos> controllers) {
-        ArrayDeque<BlockPos> toSearch = new ArrayDeque<>();
-        toSearch.push(origin);
-        List<BlockPos> searched = new ArrayList<>();
-        while (!toSearch.isEmpty()){
-            BlockPos p = toSearch.removeFirst();
-            for (BlockPos p2 : Arrays.asList(p.up(), p.down(), p.north(), p.south(), p.east(), p.west())) {
-                if (searched.contains(p2)) {
-                    continue;
-                }
-                searched.add(p2);
-                Block b = world.getBlockState(p2).getBlock();
-                if (b == YNetMod.CABLE || b == YNetMod.CONNECTOR) {
-                    toSearch.add(p2);
-                } else if (b == YNetMod.CONTROLLER) {
-                    controllers.add(p2);
-                }
-            }
-        }
-    }
-
     public void setController(BlockPos pos) {
         controller = pos;
+        networks.put(pos, this);
     }
 
     public Set<BlockPos> getProviders(BlockView world) {

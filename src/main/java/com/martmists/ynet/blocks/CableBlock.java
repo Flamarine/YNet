@@ -58,36 +58,13 @@ public class CableBlock extends ConnectingBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
-        Set<BlockPos> controllers = new HashSet<>();
-
-        // No longer connected, check all neighbors
-        Network.getConnectedControllers(world, pos, controllers);
-
-        System.out.println("Controllers: " + controllers);  // Empty?
-        for (BlockPos p : controllers){
-            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
-            be.updateNetwork();
-        }
+    public void onBroken(IWorld world, BlockPos pos, BlockState state) {
+        Network.removeCable(world, pos);
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        Set<BlockPos> controllers = new HashSet<>();
-
-        // TODO: Find a better way to do this instead of a BFS through the world
-        Network.getConnectedControllers(world, pos, controllers);
-
-        System.out.println("Controllers: " + controllers);
-        for (BlockPos p : controllers){
-            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
-            // be.network.cables.add(p);
-            Set<BlockPos> known = new HashSet<>();
-            known.addAll(be.network.cables);
-            known.addAll(be.network.connectors);
-            Network.getConnectedBlocks(world, pos, known, be.network.cables, be.network.connectors);
-        }
+        Network.addCable(world, pos);
     }
 
     public BlockState withConnectionProperties(BlockView world, BlockPos pos) {

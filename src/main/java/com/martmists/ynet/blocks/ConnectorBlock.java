@@ -118,35 +118,13 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
-        Set<BlockPos> controllers = new HashSet<>();
-
-        Network.getConnectedControllers(world, pos, controllers);
-
-        System.out.println("Controllers: " + controllers);  // Empty?
-        for (BlockPos p : controllers){
-            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
-            be.updateNetwork();
-        }
+    public void onBroken(IWorld world, BlockPos pos, BlockState state) {
+        Network.removeConnector(world, pos);
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        Set<BlockPos> controllers = new HashSet<>();
-
-        // TODO: Find a better way to do this instead of a BFS through the world
-        Network.getConnectedControllers(world, pos, controllers);
-
-        System.out.println("Controllers: " + controllers);
-        for (BlockPos p : controllers){
-            ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(p);
-            // be.network.connectors.add(p);
-            Set<BlockPos> known = new HashSet<>();
-            known.addAll(be.network.cables);
-            known.addAll(be.network.connectors);
-            Network.getConnectedBlocks(world, pos, known, be.network.cables, be.network.connectors);
-        }
+        Network.addConnector(world, pos);
     }
 
     public int getRedstoneOutput(Direction facing, BlockView world, BlockPos pos){
