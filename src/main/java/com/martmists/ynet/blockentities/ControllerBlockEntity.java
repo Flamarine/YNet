@@ -27,10 +27,6 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
         this.network.setController(pos);
     }
 
-    // TODO:
-    // - Add configurable channels
-    // - Add a way to get input/output blocks from said channel
-
     public void updateNetwork() {
         network.reloadAllNodes(world);
     }
@@ -49,8 +45,6 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
 
     @Override
     public void tick() {
-        // TODO:
-        // Collect all connected blocks
         if (network.cables == null) {
             network.setController(pos);
             updateNetwork();
@@ -62,4 +56,8 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
             }
         }
     }
+
+    // TODO:
+    // - fromTag and toTag
+    // - GUI
 }

@@ -36,7 +36,6 @@ public class ControllerBlock extends BlockWithEntity {
             Set<BlockPos> providers = ((ControllerBlockEntity)world.getBlockEntity(pos)).network.getProviders(world);
             System.out.println("Start of list");
             for (BlockPos p : providers) {
-                // TODO: Able to find providers that are no longer connected (e.g. cable was broken)
                 System.out.println("Provider found at " + p + ": " + world.getBlockState(p).getBlock());
             }
             System.out.println("End of list");
