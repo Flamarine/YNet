@@ -1,7 +1,9 @@
 package com.martmists.ynet.blocks;
 
+import com.martmists.ynet.YNetModClient;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.blockentities.ControllerBlockEntity;
+import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -10,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -39,6 +42,12 @@ public class ControllerBlock extends BlockWithEntity {
                 System.out.println("Provider found at " + p + ": " + world.getBlockState(p).getBlock());
             }
             System.out.println("End of list");
+        }
+
+        if (!world.isClient) {
+            ContainerProviderRegistry.INSTANCE.openContainer(new Identifier("ynet:controller"), player, (buffer) -> {
+                buffer.writeBlockPos(pos);
+            });
         }
 
         return ActionResult.SUCCESS;

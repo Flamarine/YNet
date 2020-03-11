@@ -11,13 +11,18 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modCompile "TechReborn:${project.tr_slug}"
+    modCompileOnly "TechReborn:${project.tr_slug}"
+    modImplementation "com.github.vini2003:spinnery:${project.spinnery_version}"
 }
 
 repositories {
     maven {
         name = "TechReborn"
         url = "https://maven.fabricmc.net/"
+    }
+    maven {
+        name = "Spinnery"
+        url  "https://dl.bintray.com/spinnery/Spinnery"
     }
 }
 

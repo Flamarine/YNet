@@ -2,20 +2,14 @@ package com.martmists.ynet.blockentities;
 
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
-import com.martmists.ynet.blocks.CableBlock;
-import com.martmists.ynet.blocks.ConnectorBlock;
 import com.martmists.ynet.event.ProviderTickCallback;
 import com.martmists.ynet.network.Channel;
 import com.martmists.ynet.network.Network;
-import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ControllerBlockEntity extends BlockEntity implements Tickable {
     public Network network;
@@ -49,10 +43,10 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
             network.setController(pos);
             updateNetwork();
         }
-        Set<BlockPos> blocks = network.getProviders(world);
         for (Channel ch : channels) {
-            if (ch != null) {
-                YNetMod.PROVIDERS.get(ch.providerType).interact(ch.connectorSettings, this);
+            if (ch != null && ch.providerType != null) {
+                ProviderTickCallback<?> callback = YNetMod.PROVIDERS.get(ch.providerType);
+                callback.interact(ch.connectorSettings, this);
             }
         }
     }

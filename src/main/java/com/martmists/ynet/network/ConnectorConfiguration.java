@@ -1,17 +1,21 @@
 package com.martmists.ynet.network;
 
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 public class ConnectorConfiguration {
-    public State state = State.DISABLED;
+    public ConnectorConfiguration() {
+        state = State.DISABLED;
+        priority = 0;
+    }
+
+    public State state;
     public BlockPos providerPos;
     public int priority;
 
-    // For items
-    public Item[] filter;
+    // For items/fluids/etc
+    public Object[] filter;
 
-    public static enum State {
+    public enum State {
         DISABLED,
         INPUT,
         OUTPUT
