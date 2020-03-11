@@ -87,7 +87,8 @@ public class FluidTickCallback implements ProviderTickCallback<FluidProvider> {
 
                 if (receiverConfig.filter != null) {
                     Entry fe = e;
-                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj == fe.fluid)){
+                    // TODO
+                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj.equals(fe.fluid))){
                         continue;
                     }
                 }

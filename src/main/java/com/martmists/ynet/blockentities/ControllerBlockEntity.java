@@ -4,12 +4,17 @@ import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.event.ProviderTickCallback;
 import com.martmists.ynet.network.Channel;
+import com.martmists.ynet.network.ConnectorConfiguration;
 import com.martmists.ynet.network.Network;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ControllerBlockEntity extends BlockEntity implements Tickable {
     public Network network;
@@ -53,5 +58,51 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
 
     // TODO:
     // - fromTag and toTag
-    // - GUI
+
+
+    @Override
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        CompoundTag customData = tag.getCompound("controllerData");
+        for (String key : customData.getKeys()) {
+            int channelIndex = Integer.parseInt(key.substring(8));
+            channels[channelIndex] = new Channel();
+            CompoundTag cData = customData.getCompound(key);
+            String cType = customData.getString("type");
+            channels[channelIndex].providerType = YNetMod.PROVIDER_NAMES.entrySet().stream()
+                    .filter(e -> e.getValue().equals(cType))
+                    .map(Map.Entry::getKey)
+                    .findFirst().orElse(null);
+
+            if (channels[channelIndex].providerType == null) {
+                channels[channelIndex] = null;
+                continue;
+            }
+
+            ListTag connectors = cData.getList("connectors", NbtType.COMPOUND);
+            channels[channelIndex].connectorSettings = connectors.stream().map(t -> {
+                ConnectorConfiguration config = new ConnectorConfiguration();
+                config.fromTag((CompoundTag) t);
+                return config;
+            }).collect(Collectors.toSet());
+        }
+    }
+
+    @Override
+    public CompoundTag toTag(CompoundTag tag) {
+        CompoundTag customData = new CompoundTag();
+        for (int i = 0; i < 9; i++) {
+            Channel c = channels[i];
+            if (c != null) {
+                CompoundTag cData = new CompoundTag();
+                ListTag connectors = new ListTag();
+                c.connectorSettings.forEach((s) -> s.toTag(connectors));
+                cData.put("connectors", connectors);
+                cData.putString("type", YNetMod.PROVIDER_NAMES.getOrDefault(c.providerType, "null"));
+                customData.put("channel_"+i, cData);
+            }
+        }
+        tag.put("controllerData", customData);
+        return super.toTag(tag);
+    }
 }

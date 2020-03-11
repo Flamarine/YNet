@@ -89,7 +89,7 @@ public class YNetMod implements ModInitializer {
     }
 
     static <T extends BaseProvider> ProviderTickCallback<T> register(String name, int color, Class<T> clazz, ProviderTickCallback<T> callback) {
-        PROVIDER_NAMES.put(clazz, name.replace(":", "."));
+        PROVIDER_NAMES.put(clazz, name);
         PROVIDERS.put(clazz, callback);
         COLOR_MAP.put(clazz, color);
         return callback;

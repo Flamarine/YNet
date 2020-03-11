@@ -20,6 +20,7 @@ import spinnery.widget.api.Size;
 import spinnery.widget.api.WVerticalScrollable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,6 +78,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             if (channelSettingsPanel.getZ() != 100){
                 return;
             }
+            sourceBlockEntity.markDirty();
             int currentIndex = TYPE_LOOP.indexOf((currentChannel != null) ? currentChannel.providerType : null);
             Class<? extends BaseProvider> nextType;
             try {
@@ -88,6 +90,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 currentChannel = new Channel();
             }
             currentChannel.providerType = nextType;
+            currentChannel.connectorSettings = new HashSet<>();
             sourceBlockEntity.channels[channelNum] = currentChannel;
             if (nextType == null) {
                 currentChannel = null;
@@ -97,7 +100,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelButtons[channelNum].overrideStyle("background.on", YNetMod.COLOR_MAP.get(nextType));
                 channelButtons[channelNum].overrideStyle("background.off", YNetMod.COLOR_MAP.get(nextType));
             }
-            channelTypeButton.setLabel(YNetMod.PROVIDER_NAMES.getOrDefault(nextType, "Disabled"));
+            channelTypeButton.setLabel(YNetMod.PROVIDER_NAMES.getOrDefault(nextType, "Disabled").replace(":", "."));
         });
 
         WPanel connectorSettingsPanel = mainPanel.createChild(
@@ -120,6 +123,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             if (connectorSettingsPanel.getZ() != 100){
                 return;
             }
+            sourceBlockEntity.markDirty();
             ConnectorConfiguration.State nextState;
             switch (currentConfig.state) {
                 case DISABLED:
@@ -166,7 +170,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelSettingsPanel.setLabel("Channel " + (f + 1));
 
                 if (currentChannel != null) {
-                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.get(currentChannel.providerType)));
+                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.get(currentChannel.providerType).replace(":", ".")));
                 }
             });
 
@@ -209,7 +213,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 Channel channel = sourceBlockEntity.channels[j];
 
                 if (channel != null) {
-                    ConnectorConfiguration config = channel.connectorSettings.stream().filter((s) -> s.providerPos == p).findFirst().orElse(null);
+                    ConnectorConfiguration config = channel.connectorSettings.stream().filter((s) -> s.providerPos.equals(p)).findFirst().orElse(null);
                     if (config == null) {
                         config = new ConnectorConfiguration();
                         config.providerPos = p;
@@ -230,7 +234,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
 
                 button.setOnMouseClicked((WButton widget, int mouseX, int mouseY, int mouseButton) -> {
                     if (sourceBlockEntity.channels[k] != null) {
-                        currentConfig = sourceBlockEntity.channels[k].connectorSettings.stream().filter((s) -> s.providerPos == p).findFirst().orElse(null);
+                        currentConfig = sourceBlockEntity.channels[k].connectorSettings.stream().filter((s) -> s.providerPos.equals(p)).findFirst().orElse(null);
                         if (currentConfig == null) {
                             currentConfig = new ConnectorConfiguration();
                             currentConfig.providerPos = p;

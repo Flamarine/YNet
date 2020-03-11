@@ -33,17 +33,6 @@ public class ControllerBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (world.isClient) {
-            // Open screen
-            // for now, print all connected providers
-            Set<BlockPos> providers = ((ControllerBlockEntity)world.getBlockEntity(pos)).network.getProviders(world);
-            System.out.println("Start of list");
-            for (BlockPos p : providers) {
-                System.out.println("Provider found at " + p + ": " + world.getBlockState(p).getBlock());
-            }
-            System.out.println("End of list");
-        }
-
         if (!world.isClient) {
             ContainerProviderRegistry.INSTANCE.openContainer(new Identifier("ynet:controller"), player, (buffer) -> {
                 buffer.writeBlockPos(pos);

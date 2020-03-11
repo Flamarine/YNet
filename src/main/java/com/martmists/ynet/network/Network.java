@@ -138,15 +138,16 @@ public class Network {
             for (BlockPos p : Arrays.asList(c.up(), c.down(), c.north(), c.south(), c.east(), c.west())) {
                 Block b = world.getBlockState(p).getBlock();
                 Set<Class<? extends BaseProvider>> providerTypes = new HashSet<>();
-                findProviderTypes(b.getClass(), providerTypes);
-                if (providerTypes.contains(type) || (type == BaseProvider.class && b instanceof BaseProvider)) {
+                if (tMap.get(b.getClass()) == null) {
+                    findProviderTypes(b.getClass(), providerTypes);
+                }
+                if (tMap.get(b.getClass()).contains(type) || (type == BaseProvider.class && b instanceof BaseProvider)) {
                     providers.add(p);
                 }
             }
         });
         return providers;
     }
-
 
     // Ugly hack by Pyrofab
     private static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
