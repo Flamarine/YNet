@@ -2,26 +2,19 @@ package com.martmists.ynet.blocks;
 
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
-import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.network.Network;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class CableBlock extends ConnectingBlock {
     public CableBlock(Settings settings) {

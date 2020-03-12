@@ -3,25 +3,25 @@ package com.martmists.ynet.blocks;
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.blockentities.ConnectorBlockEntity;
-import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.network.Network;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvider {
     private static BooleanProperty NORTH_CABLE = BooleanProperty.of("north_cable");
@@ -76,8 +76,8 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
             return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
         } else {
             Block block = neighborState.getBlock();
-            return state.with(FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CONTROLLER || block instanceof BaseProvider)
-                        .with(CABLE_FACING_PROPERTIES.get(facing), block == YNetMod.CABLE);
+            return state.with(FACING_PROPERTIES.get(facing), block == YNetMod.CONTROLLER || block instanceof BaseProvider)
+                    .with(CABLE_FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CABLE);
         }
     }
 
@@ -89,18 +89,18 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
         Block block5 = world.getBlockState(pos.south()).getBlock();
         Block block6 = world.getBlockState(pos.west()).getBlock();
         return this.getDefaultState()
-                .with(DOWN, block == this || block == YNetMod.CONTROLLER || block instanceof BaseProvider)
-                .with(UP, block2 == this || block2 == YNetMod.CONTROLLER || block2 instanceof BaseProvider)
-                .with(NORTH, block3 == this || block3 == YNetMod.CONTROLLER || block3 instanceof BaseProvider)
-                .with(EAST, block4 == this || block4 == YNetMod.CONTROLLER || block4 instanceof BaseProvider)
-                .with(SOUTH, block5 == this || block5 == YNetMod.CONTROLLER || block5 instanceof BaseProvider)
-                .with(WEST, block6 == this || block6 == YNetMod.CONTROLLER || block6 instanceof BaseProvider)
-                .with(DOWN_CABLE, block == YNetMod.CABLE)
-                .with(UP_CABLE, block2 == YNetMod.CABLE)
-                .with(NORTH_CABLE, block3 == YNetMod.CABLE)
-                .with(EAST_CABLE, block4 == YNetMod.CABLE)
-                .with(SOUTH_CABLE, block5 == YNetMod.CABLE)
-                .with(WEST_CABLE, block6 == YNetMod.CABLE);
+                .with(DOWN, block == YNetMod.CONTROLLER || block instanceof BaseProvider)
+                .with(UP, block2 == YNetMod.CONTROLLER || block2 instanceof BaseProvider)
+                .with(NORTH, block3 == YNetMod.CONTROLLER || block3 instanceof BaseProvider)
+                .with(EAST, block4 == YNetMod.CONTROLLER || block4 instanceof BaseProvider)
+                .with(SOUTH, block5 == YNetMod.CONTROLLER || block5 instanceof BaseProvider)
+                .with(WEST, block6 == YNetMod.CONTROLLER || block6 instanceof BaseProvider)
+                .with(DOWN_CABLE, block == this || block == YNetMod.CABLE)
+                .with(UP_CABLE, block2 == this || block2 == YNetMod.CABLE)
+                .with(NORTH_CABLE, block3 == this || block3 == YNetMod.CABLE)
+                .with(EAST_CABLE, block4 == this || block4 == YNetMod.CABLE)
+                .with(SOUTH_CABLE, block5 == this || block5 == YNetMod.CABLE)
+                .with(WEST_CABLE, block6 == this || block6 == YNetMod.CABLE);
     }
 
     @Override
@@ -110,11 +110,11 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
 
     @Override
     public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
-        return ((ConnectorBlockEntity)world.getBlockEntity(pos)).getRedstonePower(facing);
+        return ((ConnectorBlockEntity) world.getBlockEntity(pos)).getRedstonePower(facing);
     }
 
     public void setRedstoneOutput(Direction facing, BlockView world, BlockPos pos, int strength) {
-        ((ConnectorBlockEntity)world.getBlockEntity(pos)).setRedstonePower(facing, strength);
+        ((ConnectorBlockEntity) world.getBlockEntity(pos)).setRedstonePower(facing, strength);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
         Network.addConnector(world, pos);
     }
 
-    public int getRedstoneOutput(Direction facing, BlockView world, BlockPos pos){
+    public int getRedstoneOutput(Direction facing, BlockView world, BlockPos pos) {
         BlockState state = world.getBlockState(pos.offset(facing));
         return state.getBlock().getWeakRedstonePower(state, world, pos, facing);
     }

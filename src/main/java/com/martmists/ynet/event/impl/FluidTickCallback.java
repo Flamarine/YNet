@@ -1,13 +1,11 @@
 package com.martmists.ynet.event.impl;
 
 import com.martmists.ynet.api.FluidProvider;
-import com.martmists.ynet.api.ItemProvider;
 import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.event.ProviderTickCallback;
 import com.martmists.ynet.network.ConnectorConfiguration;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -59,7 +57,7 @@ public class FluidTickCallback implements ProviderTickCallback<FluidProvider> {
         Map<FluidProvider, Integer> fluidsRemoved = new HashMap<>();
 
         while (!entries.isEmpty()) {
-            if (e.amount <= 0){
+            if (e.amount <= 0) {
                 try {
                     e = entries.get(1);
                 } catch (IndexOutOfBoundsException exc) {
@@ -76,7 +74,7 @@ public class FluidTickCallback implements ProviderTickCallback<FluidProvider> {
             }
 
             boolean found = false;
-            for (ConnectorConfiguration receiverConfig : takeItems){
+            for (ConnectorConfiguration receiverConfig : takeItems) {
                 FluidProvider receiver = (FluidProvider) world.getBlockState(receiverConfig.providerPos).getBlock();
                 fluidsStored.putIfAbsent(receiver, 0);
                 int count = Math.min(
@@ -88,12 +86,12 @@ public class FluidTickCallback implements ProviderTickCallback<FluidProvider> {
                 if (receiverConfig.filter != null) {
                     Entry fe = e;
                     // TODO
-                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj.equals(fe.fluid))){
+                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj.equals(fe.fluid))) {
                         continue;
                     }
                 }
 
-                if (count > 0){
+                if (count > 0) {
                     fluidsStored.put(receiver, fluidsStored.get(receiver) + count);
                     fluidsRemoved.put(e.provider, fluidsRemoved.get(e.provider) + count);
                     int finalCount = e.amount - count;

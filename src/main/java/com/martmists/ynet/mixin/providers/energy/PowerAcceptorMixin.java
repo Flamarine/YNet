@@ -23,15 +23,15 @@ public class PowerAcceptorMixin implements EnergyProvider {
         }
         return be.canAcceptEnergy(null) ?
                 Math.min(
-                    be.getMaxStoredPower()-be.getStored(EnergySide.UNKNOWN),
-                    be.getMaxInput(EnergySide.UNKNOWN)) :
+                        be.getMaxStoredPower() - be.getStored(EnergySide.UNKNOWN),
+                        be.getMaxInput(EnergySide.UNKNOWN)) :
                 0;
     }
 
     @Override
     public void inputEnergy(BlockView world, BlockPos pos, double energy) {
         PowerAcceptorBlockEntity be = getBlockEntity(world, pos);
-        be.setEnergy(be.getEnergy()+energy);
+        be.setEnergy(be.getEnergy() + energy);
     }
 
     @Override
@@ -42,20 +42,20 @@ public class PowerAcceptorMixin implements EnergyProvider {
         }
         return be.canProvideEnergy(null) ?
                 Math.min(
-                    be.getStored(EnergySide.UNKNOWN),
-                    be.getMaxOutput(EnergySide.UNKNOWN)) :
+                        be.getStored(EnergySide.UNKNOWN),
+                        be.getMaxOutput(EnergySide.UNKNOWN)) :
                 0;
     }
 
     @Override
     public void outputEnergy(BlockView world, BlockPos pos, double energy) {
         PowerAcceptorBlockEntity be = getBlockEntity(world, pos);
-        be.setEnergy(be.getEnergy()-energy);
+        be.setEnergy(be.getEnergy() - energy);
     }
 
-    private PowerAcceptorBlockEntity getBlockEntity(BlockView world, BlockPos pos){
+    private PowerAcceptorBlockEntity getBlockEntity(BlockView world, BlockPos pos) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof PowerAcceptorBlockEntity){
+        if (be instanceof PowerAcceptorBlockEntity) {
             return (PowerAcceptorBlockEntity) be;
         }
         return null;

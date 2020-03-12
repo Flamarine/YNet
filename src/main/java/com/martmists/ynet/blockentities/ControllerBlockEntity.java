@@ -6,14 +6,22 @@ import com.martmists.ynet.event.ProviderTickCallback;
 import com.martmists.ynet.network.Channel;
 import com.martmists.ynet.network.ConnectorConfiguration;
 import com.martmists.ynet.network.Network;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ControllerBlockEntity extends BlockEntity implements Tickable {
@@ -23,7 +31,6 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
     public ControllerBlockEntity() {
         super(YNetMod.CONTROLLER_BE);
         this.network = new Network();
-        this.network.setController(pos);
     }
 
     public void updateNetwork() {
@@ -32,8 +39,8 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
 
     private List<BlockPos> getConnectedProviders(Set<BlockPos> connectors) {
         List<BlockPos> providers = new ArrayList<>();
-        for (BlockPos c : connectors){
-            for (BlockPos offset : new BlockPos[]{ c.up(), c.down(), c.north(), c.east(), c.south(), c.west() }){
+        for (BlockPos c : connectors) {
+            for (BlockPos offset : new BlockPos[]{c.up(), c.down(), c.north(), c.east(), c.south(), c.west()}) {
                 if (world.getBlockState(offset).getBlock() instanceof BaseProvider) {
                     providers.add(offset);
                 }
@@ -44,9 +51,8 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
 
     @Override
     public void tick() {
-        if (network.cables == null) {
-            network.setController(pos);
-            updateNetwork();
+        if (network.connectors == null) {
+            register();
         }
         for (Channel ch : channels) {
             if (ch != null && ch.providerType != null) {
@@ -55,10 +61,6 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
             }
         }
     }
-
-    // TODO:
-    // - fromTag and toTag
-
 
     @Override
     public void fromTag(CompoundTag tag) {
@@ -99,10 +101,39 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
                 c.connectorSettings.forEach((s) -> s.toTag(connectors));
                 cData.put("connectors", connectors);
                 cData.putString("type", YNetMod.PROVIDER_NAMES.getOrDefault(c.providerType, "null"));
-                customData.put("channel_"+i, cData);
+                customData.put("channel_" + i, cData);
             }
         }
         tag.put("controllerData", customData);
         return super.toTag(tag);
+    }
+
+    @Override
+    public void markDirty() {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeBlockPos(pos);
+        CompoundTag tag = new CompoundTag();
+        this.toTag(tag);
+        buf.writeCompoundTag(tag);
+
+        if (world.isClient()) {
+            // Send C2S
+            ClientSidePacketRegistry.INSTANCE.sendToServer(YNetMod.CONTROLLER_UPDATE_C2S, buf);
+        } else {
+            // Send S2C
+            for (PlayerEntity player : world.getPlayers()) {
+                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, YNetMod.CONTROLLER_UPDATE_S2C, buf);
+            }
+        }
+        super.markDirty();
+    }
+
+    public void sMarkDirty() {
+        super.markDirty();
+    }
+
+    public void register() {
+        network.setController(pos);
+        updateNetwork();
     }
 }

@@ -10,13 +10,14 @@ import com.martmists.ynet.blocks.CableBlock;
 import com.martmists.ynet.blocks.ConnectorBlock;
 import com.martmists.ynet.blocks.ControllerBlock;
 import com.martmists.ynet.containers.ControllerContainer;
+import com.martmists.ynet.event.ProviderTickCallback;
 import com.martmists.ynet.event.impl.EnergyTickCallback;
 import com.martmists.ynet.event.impl.FluidTickCallback;
 import com.martmists.ynet.event.impl.ItemTickCallback;
-import com.martmists.ynet.event.ProviderTickCallback;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
@@ -24,13 +25,18 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class YNetMod implements ModInitializer {
+    public static Identifier CONTROLLER_UPDATE_S2C = new Identifier("ynet", "cus2c");
+    public static Identifier CONTROLLER_UPDATE_C2S = new Identifier("ynet", "cuc2s");
+
     public static ItemGroup YNET_GROUP = FabricItemGroupBuilder.build(
             new Identifier("ynet", "items"),
             () -> new ItemStack(
@@ -60,20 +66,6 @@ public class YNetMod implements ModInitializer {
     public static Map<Class<? extends BaseProvider>, String> PROVIDER_NAMES = new HashMap<>();
     public static Map<Class<? extends BaseProvider>, Integer> COLOR_MAP = new HashMap<>();
 
-    @Override
-    public void onInitialize() {
-        System.out.println("YNet loading up!");
-        register("ynet:item", 0xff489030, ItemProvider.class, new ItemTickCallback());
-        register("ynet:fluid", 0xff0077be, FluidProvider.class, new FluidTickCallback());
-        register("ynet:energy", 0xfffffe00, EnergyProvider.class, new EnergyTickCallback());
-        // TODO:
-        // - Add support for configuring redstone signals on connectorss
-
-        ContainerProviderRegistry.INSTANCE.registerFactory(new Identifier("ynet:controller"), (syncId, id, player, buf) -> {
-            return new ControllerContainer(syncId, player.inventory, buf);
-        });
-    }
-
     static <T extends Block> T register(String name, T block) {
         return register(name, block, new BlockItem(block, new Item.Settings().group(YNET_GROUP)));
     }
@@ -93,5 +85,29 @@ public class YNetMod implements ModInitializer {
         PROVIDERS.put(clazz, callback);
         COLOR_MAP.put(clazz, color);
         return callback;
+    }
+
+    @Override
+    public void onInitialize() {
+        System.out.println("YNet loading up!");
+        register("ynet:item", 0xff489030, ItemProvider.class, new ItemTickCallback());
+        register("ynet:fluid", 0xff0077be, FluidProvider.class, new FluidTickCallback());
+        register("ynet:energy", 0xfffffe00, EnergyProvider.class, new EnergyTickCallback());
+        // TODO:
+        // - Add support for configuring redstone signals on connectorss
+
+        ContainerProviderRegistry.INSTANCE.registerFactory(new Identifier("ynet:controller"), (syncId, id, player, buf) -> {
+            return new ControllerContainer(syncId, player.inventory, buf);
+        });
+
+        ServerSidePacketRegistry.INSTANCE.register(CONTROLLER_UPDATE_C2S, (packetContext, attachedData) -> {
+            BlockPos pos = attachedData.readBlockPos();
+            CompoundTag tag = attachedData.readCompoundTag();
+            packetContext.getTaskQueue().execute(() -> {
+                ControllerBlockEntity be = (ControllerBlockEntity) packetContext.getPlayer().world.getBlockEntity(pos);
+                be.fromTag(tag);
+                be.markDirty();
+            });
+        });
     }
 }

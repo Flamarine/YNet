@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.List;
 
-@Mixin(value={
+@Mixin(value = {
         ChestBlock.class, TrappedChestBlock.class,
         ShulkerBoxBlock.class, DispenserBlock.class,
         HopperBlock.class, BarrelBlock.class})
@@ -19,13 +19,13 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public int getItemInputCount(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
+        List<ItemStack> stacks = ((InventoryStacksAccessor) getBlockEntity(world, pos)).callGetInvStackList();
         if (stacks.stream().anyMatch(ItemStack::isEmpty)) {
             return itemStack.getMaxCount();
         }
         int available = 0;
         for (ItemStack stack : stacks) {
-            if (stack.getItem() == itemStack.getItem()){
+            if (stack.getItem() == itemStack.getItem()) {
                 available += stack.getMaxCount() - stack.getCount();
             }
         }
@@ -34,10 +34,10 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public void inputItem(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
+        List<ItemStack> stacks = ((InventoryStacksAccessor) getBlockEntity(world, pos)).callGetInvStackList();
         int inputCount = itemStack.getCount();
         for (ItemStack stack : stacks) {
-            if (stack.getItem() == itemStack.getItem()){
+            if (stack.getItem() == itemStack.getItem()) {
                 int available = stack.getMaxCount() - stack.getCount();
                 int inputting = Math.min(available, inputCount);
                 inputCount -= inputting;
@@ -47,10 +47,10 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
                 return;
             }
         }
-        if (inputCount > 0){
+        if (inputCount > 0) {
             int i = 0;
             for (ItemStack stack : stacks) {
-                if (stack.isEmpty()){
+                if (stack.isEmpty()) {
                     stacks.set(i, new ItemStack(itemStack.getItem(), inputCount));
                     return;
                 }
@@ -61,20 +61,20 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
 
     @Override
     public ItemStack[] getItemOutputStacks(BlockView world, BlockPos pos) {
-        return ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList().stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
+        return ((InventoryStacksAccessor) getBlockEntity(world, pos)).callGetInvStackList().stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
     }
 
     @Override
     public void outputItem(BlockView world, BlockPos pos, ItemStack itemStack) {
-        List<ItemStack> stacks = ((InventoryStacksAccessor)getBlockEntity(world, pos)).callGetInvStackList();
+        List<ItemStack> stacks = ((InventoryStacksAccessor) getBlockEntity(world, pos)).callGetInvStackList();
         int outputCount = itemStack.getCount();
         int i = 0;
-        for (ItemStack stack : stacks){
-            if (stack.getItem() == itemStack.getItem()){
+        for (ItemStack stack : stacks) {
+            if (stack.getItem() == itemStack.getItem()) {
                 int outputting = Math.min(outputCount, stack.getCount());
                 stack.setCount(outputting);
                 outputCount -= outputting;
-                if (stack.getCount() == 0){
+                if (stack.getCount() == 0) {
                     stacks.set(i, ItemStack.EMPTY);
                 }
                 if (outputCount <= 0) {

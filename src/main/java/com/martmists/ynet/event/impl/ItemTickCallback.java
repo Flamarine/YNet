@@ -1,6 +1,5 @@
 package com.martmists.ynet.event.impl;
 
-import com.martmists.ynet.api.EnergyProvider;
 import com.martmists.ynet.api.ItemProvider;
 import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.event.ProviderTickCallback;
@@ -39,7 +38,7 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
                 .sorted((a, b) -> a.priority >= b.priority ? 0 : 1)
                 .forEach(config -> {
                     ItemProvider p = (ItemProvider) world.getBlockState(config.providerPos).getBlock();
-                    for (ItemStack s : p.getItemOutputStacks(world, config.providerPos)){
+                    for (ItemStack s : p.getItemOutputStacks(world, config.providerPos)) {
                         entries.add(new Entry(config.providerPos, p, s));
                     }
                 });
@@ -54,7 +53,7 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
         Map<ItemProvider, Integer> itemsRemoved = new HashMap<>();
 
         while (!entries.isEmpty()) {
-            if (e.items.getCount() <= 0){
+            if (e.items.getCount() <= 0) {
                 try {
                     e = entries.get(1);
                 } catch (IndexOutOfBoundsException exc) {
@@ -71,7 +70,7 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
             }
 
             boolean found = false;
-            for (ConnectorConfiguration receiverConfig : takeItems){
+            for (ConnectorConfiguration receiverConfig : takeItems) {
                 ItemProvider receiver = (ItemProvider) world.getBlockState(receiverConfig.providerPos).getBlock();
                 itemsStored.putIfAbsent(receiver, 0);
                 int count = Math.min(
@@ -82,12 +81,12 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
 
                 if (receiverConfig.filter != null) {
                     Entry fe = e;
-                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj == fe.items.getItem())){
+                    if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj == fe.items.getItem())) {
                         continue;
                     }
                 }
 
-                if (count > 0){
+                if (count > 0) {
                     itemsStored.put(receiver, itemsStored.get(receiver) + count);
                     itemsRemoved.put(e.provider, itemsRemoved.get(e.provider) + count);
                     int finalCount = e.items.getCount() - count;

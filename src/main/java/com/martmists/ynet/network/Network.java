@@ -3,6 +3,7 @@ package com.martmists.ynet.network;
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.blockentities.ControllerBlockEntity;
+import com.martmists.ynet.blocks.ControllerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -10,40 +11,36 @@ import net.minecraft.world.BlockView;
 import java.util.*;
 
 public class Network {
-    private static Map<BlockPos, Network> networks = new HashMap<>();
-
-    private BlockPos controller;
+    public static Map<BlockPos, Network> networks = new HashMap<>();
+    private static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
     public Set<BlockPos> cables;
     public Set<BlockPos> connectors;
+    private BlockPos controller;
 
-    public synchronized static void removeCable(BlockView world, BlockPos p) {
+    public static void removeCable(BlockView world, BlockPos p) {
         for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
             Network n = e.getValue();
             if (n.cables.contains(p)) {
-                System.out.println("Reloading nodes for network " + n);
                 n.reloadAllNodes(world);
-                System.out.println("Done reloading nodes");
             }
         }
     }
 
-    public synchronized static void removeConnector(BlockView world, BlockPos p) {
+    public static void removeConnector(BlockView world, BlockPos p) {
         for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
             Network n = e.getValue();
             if (n.connectors.contains(p)) {
-                System.out.println("Reloading nodes for network " + n);
                 n.reloadAllNodes(world);
-                System.out.println("Done reloading nodes");
             }
         }
     }
 
-    public synchronized static void addCable(BlockView world, BlockPos p) {
+    public static void addCable(BlockView world, BlockPos p) {
         Set<Network> connectedNetworks = new HashSet<>();
-        for (BlockPos pos : new BlockPos[]{ p.up(), p.down(), p.north(), p.east(), p.south(), p.west() }){
-            for (Map.Entry<BlockPos, Network> e : networks.entrySet()){
+        for (BlockPos pos : new BlockPos[]{p.up(), p.down(), p.north(), p.east(), p.south(), p.west()}) {
+            for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
                 Network n = e.getValue();
-                if (n.connectors.contains(pos) || n.cables.contains(pos)){
+                if (n.connectors.contains(pos) || n.cables.contains(pos)) {
                     connectedNetworks.add(n);
                 }
             }
@@ -53,19 +50,22 @@ public class Network {
             Set<BlockPos> known = new HashSet<>();
             known.addAll(n.cables);
             known.addAll(n.connectors);
-            System.out.println("Loading new nodes for network " + n);
             getConnectedBlocks(world, p, known, n.cables, n.connectors);
-            System.out.println("Done reloading nodes");
         }
     }
 
-    public synchronized static void addConnector(BlockView world, BlockPos p) {
+    public static void addConnector(BlockView world, BlockPos p) {
         Set<Network> connectedNetworks = new HashSet<>();
-        for (BlockPos pos : new BlockPos[]{ p.up(), p.down(), p.north(), p.east(), p.south(), p.west() }){
-            for (Map.Entry<BlockPos, Network> e : networks.entrySet()){
-                Network n = e.getValue();
-                if (n.connectors.contains(pos) || n.cables.contains(pos)){
-                    connectedNetworks.add(n);
+        for (BlockPos pos : new BlockPos[]{p.up(), p.down(), p.north(), p.east(), p.south(), p.west()}) {
+            Block b = world.getBlockState(pos).getBlock();
+            if (b instanceof ControllerBlock) {
+                connectedNetworks.add(((ControllerBlockEntity) world.getBlockEntity(pos)).network);
+            } else {
+                for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
+                    Network n = e.getValue();
+                    if (n.connectors.contains(pos) || n.cables.contains(pos)) {
+                        connectedNetworks.add(n);
+                    }
                 }
             }
         }
@@ -74,17 +74,8 @@ public class Network {
             Set<BlockPos> known = new HashSet<>();
             known.addAll(n.cables);
             known.addAll(n.connectors);
-            System.out.println("Loading new nodes for network " + n);
             getConnectedBlocks(world, p, known, n.cables, n.connectors);
-            System.out.println("Done reloading nodes");
         }
-    }
-
-    public synchronized void reloadAllNodes(BlockView world) {
-        cables = new HashSet<>();
-        connectors = new HashSet<>();
-        ControllerBlockEntity be = ((ControllerBlockEntity)world.getBlockEntity(controller));
-        getConnectedBlocks(be.getWorld(), controller, cables, connectors);
     }
 
     public static void getConnectedBlocks(BlockView world, BlockPos origin, Set<BlockPos> cables, Set<BlockPos> connectors) {
@@ -104,7 +95,7 @@ public class Network {
         }
 
         // Search connected
-        while (!toSearch.isEmpty()){
+        while (!toSearch.isEmpty()) {
             BlockPos p = toSearch.removeFirst();
             for (BlockPos p2 : Arrays.asList(p.up(), p.down(), p.north(), p.south(), p.east(), p.west())) {
                 if (exclude.contains(p2)) {
@@ -121,6 +112,26 @@ public class Network {
                 }
             }
         }
+    }
+
+    private static void findProviderTypes(Class<?> cls, Set<Class<? extends BaseProvider>> ret) {
+        tMap.putIfAbsent(cls, ret);
+        if (cls != Object.class && cls != null) {
+            if (BaseProvider.class.isAssignableFrom(cls)) {
+                ret.add((Class<? extends BaseProvider>) cls);
+            }
+            findProviderTypes(cls.getSuperclass(), ret);
+            for (Class<?> itf : cls.getInterfaces()) {
+                findProviderTypes(itf, ret);
+            }
+        }
+    }
+
+    public void reloadAllNodes(BlockView world) {
+        cables = new HashSet<>();
+        connectors = new HashSet<>();
+        ControllerBlockEntity be = ((ControllerBlockEntity) world.getBlockEntity(controller));
+        getConnectedBlocks(be.getWorld(), controller, cables, connectors);
     }
 
     public void setController(BlockPos pos) {
@@ -147,20 +158,5 @@ public class Network {
             }
         });
         return providers;
-    }
-
-    // Ugly hack by Pyrofab
-    private static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
-    private static void findProviderTypes(Class<?> cls, Set<Class<? extends BaseProvider>> ret) {
-        tMap.putIfAbsent(cls, ret);
-        if (cls != Object.class && cls != null) {
-            if (BaseProvider.class.isAssignableFrom(cls)) {
-                ret.add((Class<? extends BaseProvider>) cls);
-            }
-            findProviderTypes(cls.getSuperclass(), ret);
-            for (Class<?> itf : cls.getInterfaces()) {
-                findProviderTypes(itf, ret);
-            }
-        }
     }
 }

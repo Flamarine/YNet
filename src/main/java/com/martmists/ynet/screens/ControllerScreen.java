@@ -6,38 +6,34 @@ import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.containers.ControllerContainer;
 import com.martmists.ynet.network.Channel;
 import com.martmists.ynet.network.ConnectorConfiguration;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
-import spinnery.client.BaseRenderer;
 import spinnery.common.BaseContainerScreen;
 import spinnery.widget.*;
 import spinnery.widget.api.Position;
 import spinnery.widget.api.Size;
-import spinnery.widget.api.WVerticalScrollable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
+    private static List<Class<? extends BaseProvider>> TYPE_LOOP = new ArrayList<>(YNetMod.PROVIDER_NAMES.keySet());
+
+    static {
+        TYPE_LOOP.add(null);
+    }
+
     private final ControllerBlockEntity sourceBlockEntity;
     private int channelNum;
     private Channel currentChannel;
     private ConnectorConfiguration currentConfig;
     private WButton[] channelButtons = new WButton[9];
     private WButton configButtonClicked;
-
-    private static List<Class<? extends BaseProvider>> TYPE_LOOP = new ArrayList<>(YNetMod.PROVIDER_NAMES.keySet());
-
-    static {
-        TYPE_LOOP.add(null);
-    }
 
     public ControllerScreen(ControllerContainer linkedContainer) {
         super(new LiteralText(""), linkedContainer, linkedContainer.getPlayerInventory().player);
@@ -75,7 +71,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         );
         channelTypeButton.setLabel("Disabled");
         channelTypeButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
-            if (channelSettingsPanel.getZ() != 100){
+            if (channelSettingsPanel.getZ() != 100) {
                 return;
             }
             sourceBlockEntity.markDirty();
@@ -84,7 +80,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             try {
                 nextType = TYPE_LOOP.get(currentIndex + ((mouseButton == 0) ? 1 : -1));
             } catch (IndexOutOfBoundsException e) {
-                nextType = TYPE_LOOP.get((mouseButton == 0) ? 0 : TYPE_LOOP.size()-1);
+                nextType = TYPE_LOOP.get((mouseButton == 0) ? 0 : TYPE_LOOP.size() - 1);
             }
             if (TYPE_LOOP.get(currentIndex) == null) {
                 currentChannel = new Channel();
@@ -120,7 +116,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 Size.of(100, 14)
         );
         stateButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
-            if (connectorSettingsPanel.getZ() != 100){
+            if (connectorSettingsPanel.getZ() != 100) {
                 return;
             }
             sourceBlockEntity.markDirty();
@@ -152,15 +148,15 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             }
         });
 
-        for (int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             int f = i;
             WButton button = mainPanel.createChild(
                     WButton.class,
-                    Position.of(mainPanel, 25 + 14*i, 5),
+                    Position.of(mainPanel, 25 + 14 * i, 5),
                     Size.of(12, 14)
             );
             channelButtons[f] = button;
-            button.setLabel(Integer.toString(i+1));
+            button.setLabel(Integer.toString(i + 1));
             button.setOnMouseClicked((WButton widget, int mouseX, int mouseY, int mouseButton) -> {
                 currentChannel = sourceBlockEntity.channels[f];
                 connectorSettingsPanel.setZ(0);
@@ -191,7 +187,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         for (BlockPos p : blocksToShow) {
             WPanel row = blockList.createChild(
                     WPanel.class,
-                    Position.of(blockList, 0, 26*i),
+                    Position.of(blockList, 0, 26 * i),
                     Size.of(154, 25)
             );
             i++;
@@ -202,11 +198,11 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             );
             item.setItemStack(new ItemStack(player.world.getBlockState(p).getBlock().asItem()));
 
-            for (int j = 0; j < 9; j++){
+            for (int j = 0; j < 9; j++) {
                 int k = j;
                 WButton button = row.createChild(
                         WButton.class,
-                        Position.of(row, 21 + 14*j, 5),
+                        Position.of(row, 21 + 14 * j, 5),
                         Size.of(12, 14)
                 );
                 // Get configuration for block in channel

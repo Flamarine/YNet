@@ -1,12 +1,10 @@
 package com.martmists.ynet.mixin.providers.item;
 
 import com.martmists.ynet.api.ItemProvider;
-import com.martmists.ynet.mixin.accessors.InventoryStacksAccessor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
-import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.util.DefaultedListCollector;
 import techreborn.blockentity.machine.GenericMachineBlockEntity;
 import techreborn.blocks.GenericMachineBlock;
@@ -20,14 +18,14 @@ public class GenericMachineBlockMixin implements ItemProvider {
     @Override
     public int getItemInputCount(BlockView world, BlockPos pos, ItemStack itemStack) {
         GenericMachineBlockEntity be = getBlockEntity(world, pos);
-        if (hasInventory(be)){
+        if (hasInventory(be)) {
             List<ItemStack> stacks = getInputStacks(be);
             if (stacks.stream().anyMatch(ItemStack::isEmpty)) {
                 return itemStack.getMaxCount();
             }
             int available = 0;
             for (ItemStack stack : stacks) {
-                if (stack.getItem() == itemStack.getItem()){
+                if (stack.getItem() == itemStack.getItem()) {
                     available += stack.getMaxCount() - stack.getCount();
                 }
             }
@@ -41,7 +39,7 @@ public class GenericMachineBlockMixin implements ItemProvider {
         List<ItemStack> stacks = getInputStacks(getBlockEntity(world, pos));
         int inputCount = itemStack.getCount();
         for (ItemStack stack : stacks) {
-            if (stack.getItem() == itemStack.getItem()){
+            if (stack.getItem() == itemStack.getItem()) {
                 int available = stack.getMaxCount() - stack.getCount();
                 int inputting = Math.min(available, inputCount);
                 inputCount -= inputting;
@@ -51,10 +49,10 @@ public class GenericMachineBlockMixin implements ItemProvider {
                 return;
             }
         }
-        if (inputCount > 0){
+        if (inputCount > 0) {
             int i = 0;
             for (ItemStack stack : stacks) {
-                if (stack.isEmpty()){
+                if (stack.isEmpty()) {
                     stacks.set(i, new ItemStack(itemStack.getItem(), inputCount));
                     return;
                 }
@@ -73,12 +71,12 @@ public class GenericMachineBlockMixin implements ItemProvider {
         List<ItemStack> stacks = getOutputStacks(getBlockEntity(world, pos));
         int outputCount = itemStack.getCount();
         int i = 0;
-        for (ItemStack stack : stacks){
-            if (stack.getItem() == itemStack.getItem()){
+        for (ItemStack stack : stacks) {
+            if (stack.getItem() == itemStack.getItem()) {
                 int outputting = Math.min(outputCount, stack.getCount());
                 stack.setCount(outputting);
                 outputCount -= outputting;
-                if (stack.getCount() == 0){
+                if (stack.getCount() == 0) {
                     stacks.set(i, ItemStack.EMPTY);
                 }
                 if (outputCount <= 0) {
@@ -93,8 +91,8 @@ public class GenericMachineBlockMixin implements ItemProvider {
         }
     }
 
-    private GenericMachineBlockEntity getBlockEntity(BlockView world, BlockPos pos){
-        return (GenericMachineBlockEntity)world.getBlockEntity(pos);
+    private GenericMachineBlockEntity getBlockEntity(BlockView world, BlockPos pos) {
+        return (GenericMachineBlockEntity) world.getBlockEntity(pos);
     }
 
     private List<ItemStack> getInputStacks(GenericMachineBlockEntity be) {
