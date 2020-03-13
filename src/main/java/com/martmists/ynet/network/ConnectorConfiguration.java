@@ -21,6 +21,16 @@ public class ConnectorConfiguration {
         filter = new Item[0];
     }
 
+    @Override
+    public String toString() {
+        return "ConnectorConfiguration{" +
+                "state=" + state +
+                ", providerPos=" + providerPos +
+                ", priority=" + priority +
+                ", filter=" + Arrays.toString(filter) +
+                '}';
+    }
+
     public void toTag(ListTag tag) {
         CompoundTag data = new CompoundTag();
         ListTag l = new ListTag();
@@ -37,6 +47,8 @@ public class ConnectorConfiguration {
         data.putInt("state", state.ordinal());
         data.put("filter", l);
         data.putIntArray("pos", new int[]{providerPos.getX(), providerPos.getY(), providerPos.getZ()});
+
+        tag.add(data);
     }
 
     public void fromTag(CompoundTag tag) {

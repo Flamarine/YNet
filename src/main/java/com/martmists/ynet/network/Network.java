@@ -12,12 +12,12 @@ import java.util.*;
 
 public class Network {
     public static Map<BlockPos, Network> networks = new HashMap<>();
-    private static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
+    public static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
     public Set<BlockPos> cables;
     public Set<BlockPos> connectors;
     private BlockPos controller;
 
-    public static void removeCable(BlockView world, BlockPos p) {
+    public synchronized static void removeCable(BlockView world, BlockPos p) {
         for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
             Network n = e.getValue();
             if (n.cables.contains(p)) {
@@ -26,7 +26,7 @@ public class Network {
         }
     }
 
-    public static void removeConnector(BlockView world, BlockPos p) {
+    public synchronized static void removeConnector(BlockView world, BlockPos p) {
         for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
             Network n = e.getValue();
             if (n.connectors.contains(p)) {
@@ -35,7 +35,7 @@ public class Network {
         }
     }
 
-    public static void addCable(BlockView world, BlockPos p) {
+    public synchronized static void addCable(BlockView world, BlockPos p) {
         Set<Network> connectedNetworks = new HashSet<>();
         for (BlockPos pos : new BlockPos[]{p.up(), p.down(), p.north(), p.east(), p.south(), p.west()}) {
             for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
@@ -54,7 +54,7 @@ public class Network {
         }
     }
 
-    public static void addConnector(BlockView world, BlockPos p) {
+    public synchronized static void addConnector(BlockView world, BlockPos p) {
         Set<Network> connectedNetworks = new HashSet<>();
         for (BlockPos pos : new BlockPos[]{p.up(), p.down(), p.north(), p.east(), p.south(), p.west()}) {
             Block b = world.getBlockState(pos).getBlock();

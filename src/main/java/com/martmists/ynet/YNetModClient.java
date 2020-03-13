@@ -21,9 +21,13 @@ public class YNetModClient implements ClientModInitializer {
             BlockPos pos = attachedData.readBlockPos();
             CompoundTag tag = attachedData.readCompoundTag();
             packetContext.getTaskQueue().execute(() -> {
-                ControllerBlockEntity be = (ControllerBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos);
-                be.fromTag(tag);
-                be.sMarkDirty();
+                try {
+                    ControllerBlockEntity be = (ControllerBlockEntity) MinecraftClient.getInstance().world.getBlockEntity(pos);
+                    be.fromTag(tag);
+                    be.sMarkDirty();
+                } catch (Exception ignored) {
+
+                }
             });
         });
     }

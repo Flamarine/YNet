@@ -6,6 +6,7 @@ import com.martmists.ynet.blockentities.ControllerBlockEntity;
 import com.martmists.ynet.containers.ControllerContainer;
 import com.martmists.ynet.network.Channel;
 import com.martmists.ynet.network.ConnectorConfiguration;
+import com.martmists.ynet.network.Network;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
@@ -74,7 +75,6 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             if (channelSettingsPanel.getZ() != 100) {
                 return;
             }
-            sourceBlockEntity.markDirty();
             int currentIndex = TYPE_LOOP.indexOf((currentChannel != null) ? currentChannel.providerType : null);
             Class<? extends BaseProvider> nextType;
             try {
@@ -97,6 +97,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelButtons[channelNum].overrideStyle("background.off", YNetMod.COLOR_MAP.get(nextType));
             }
             channelTypeButton.setLabel(YNetMod.PROVIDER_NAMES.getOrDefault(nextType, "Disabled").replace(":", "."));
+            sourceBlockEntity.markDirty();
         });
 
         WPanel connectorSettingsPanel = mainPanel.createChild(
@@ -116,10 +117,13 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 Size.of(100, 14)
         );
         stateButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
-            if (connectorSettingsPanel.getZ() != 100) {
+            if (currentChannel == null ||
+                    currentChannel.providerType == null ||
+                    connectorSettingsPanel.getZ() != 100 ||
+                    currentConfig == null ||
+                    !Network.tMap.get(player.world.getBlockState(currentConfig.providerPos).getBlock().getClass()).contains(currentChannel.providerType)) {
                 return;
             }
-            sourceBlockEntity.markDirty();
             ConnectorConfiguration.State nextState;
             switch (currentConfig.state) {
                 case DISABLED:
@@ -146,6 +150,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 configButtonClicked.overrideStyle("background.on", 0xff8b8b8b);
                 configButtonClicked.overrideStyle("background.off", 0xff8b8b8b);
             }
+            sourceBlockEntity.markDirty();
         });
 
         for (int i = 0; i < 9; i++) {
@@ -166,11 +171,11 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelSettingsPanel.setLabel("Channel " + (f + 1));
 
                 if (currentChannel != null) {
-                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.get(currentChannel.providerType).replace(":", ".")));
+                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.getOrDefault(currentChannel.providerType, "Disabled").replace(":", ".")));
                 }
             });
 
-            if (sourceBlockEntity.channels[i] != null) {
+            if (sourceBlockEntity.channels[i] != null && sourceBlockEntity.channels[i].providerType != null) {
                 button.overrideStyle("background.on", YNetMod.COLOR_MAP.get(sourceBlockEntity.channels[i].providerType));
                 button.overrideStyle("background.off", YNetMod.COLOR_MAP.get(sourceBlockEntity.channels[i].providerType));
             }

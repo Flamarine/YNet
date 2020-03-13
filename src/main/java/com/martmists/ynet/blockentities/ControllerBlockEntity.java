@@ -70,7 +70,7 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
             int channelIndex = Integer.parseInt(key.substring(8));
             channels[channelIndex] = new Channel();
             CompoundTag cData = customData.getCompound(key);
-            String cType = customData.getString("type");
+            String cType = cData.getString("type");
             channels[channelIndex].providerType = YNetMod.PROVIDER_NAMES.entrySet().stream()
                     .filter(e -> e.getValue().equals(cType))
                     .map(Map.Entry::getKey)
@@ -98,9 +98,12 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
             if (c != null) {
                 CompoundTag cData = new CompoundTag();
                 ListTag connectors = new ListTag();
-                c.connectorSettings.forEach((s) -> s.toTag(connectors));
+                c.connectorSettings.forEach((s) -> {
+                    s.toTag(connectors);
+                });
                 cData.put("connectors", connectors);
-                cData.putString("type", YNetMod.PROVIDER_NAMES.getOrDefault(c.providerType, "null"));
+                String cType = YNetMod.PROVIDER_NAMES.getOrDefault(c.providerType, "null");
+                cData.putString("type", cType);
                 customData.put("channel_" + i, cData);
             }
         }
