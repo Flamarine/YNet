@@ -41,22 +41,6 @@ processResources {
 
 setBuildDir("../../build")
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ["../../src/main/java"]
-        }
-        resources {
-            srcDirs = ["../../src/main/resources"]
-        }
-    }
-    api {
-        java {
-            srcDirs = ["../../src/main/java/com/martmists/ynet/api"]
-        }
-    }
-}
-
 jar {
     from "LICENSE"
 }
@@ -68,7 +52,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task apiJar(type: Jar, dependsOn: classes) {
     archiveClassifier.set("api")
-    from sourceSets.api.allSource
+    from sourceSets.main.allSource.filter { it.path.contains("/api/") }
 }
 
 jar.dependsOn apiJar
