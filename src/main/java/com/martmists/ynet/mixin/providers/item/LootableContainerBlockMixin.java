@@ -21,7 +21,7 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
     public int getItemInputCount(BlockView world, BlockPos pos, ItemStack itemStack) {
         List<ItemStack> stacks = ((InventoryStacksAccessor) getBlockEntity(world, pos)).callGetInvStackList();
         if (stacks.stream().anyMatch(ItemStack::isEmpty)) {
-            return itemStack.getMaxCount();
+            return itemStack.getCount();
         }
         int available = 0;
         for (ItemStack stack : stacks) {
@@ -29,7 +29,7 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
                 available += stack.getMaxCount() - stack.getCount();
             }
         }
-        return Math.min(available, itemStack.getMaxCount());
+        return Math.min(available, itemStack.getCount());
     }
 
     @Override
@@ -72,7 +72,7 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
         for (ItemStack stack : stacks) {
             if (stack.getItem() == itemStack.getItem()) {
                 int outputting = Math.min(outputCount, stack.getCount());
-                stack.setCount(outputting);
+                stack.setCount(stack.getCount() - outputting);
                 outputCount -= outputting;
                 if (stack.getCount() == 0) {
                     stacks.set(i, ItemStack.EMPTY);

@@ -50,6 +50,11 @@ sourceSets {
             srcDirs = ["../../src/main/resources"]
         }
     }
+    api {
+        java {
+            srcDirs = ["../../src/main/java/com/martmists/ynet/api"]
+        }
+    }
 }
 
 jar {
@@ -61,5 +66,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set("api")
+    from sourceSets.api.allSource
+}
+
+jar.dependsOn apiJar
 jar.dependsOn sourcesJar
 build.dependsOn jar

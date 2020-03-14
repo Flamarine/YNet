@@ -27,10 +27,12 @@ import java.util.stream.Collectors;
 public class ControllerBlockEntity extends BlockEntity implements Tickable {
     public Network network;
     public Channel[] channels = new Channel[9];
+    private int t;
 
     public ControllerBlockEntity() {
         super(YNetMod.CONTROLLER_BE);
         this.network = new Network();
+        t = 0;
     }
 
     public void updateNetwork() {
@@ -54,10 +56,21 @@ public class ControllerBlockEntity extends BlockEntity implements Tickable {
         if (network.connectors == null) {
             register();
         }
-        for (Channel ch : channels) {
-            if (ch != null && ch.providerType != null) {
-                ProviderTickCallback<?> callback = YNetMod.PROVIDERS.get(ch.providerType);
-                callback.interact(ch.connectorSettings, this);
+
+        t++;
+        if (t > 5) {
+            t = 0;
+            for (Channel ch : channels) {
+                if (ch != null && ch.providerType != null) {
+                    ProviderTickCallback<?> callback = YNetMod.PROVIDERS.get(ch.providerType);
+                    try {
+                        callback.interact(ch.connectorSettings, this);
+                    } catch (ClassCastException e) {
+                        // Invalid world, log warning and reload nodes
+                        e.printStackTrace();
+                        ch.connectorSettings.removeIf(it -> !(world.getBlockState(it.providerPos).getBlock() instanceof BaseProvider));
+                    }
+                }
             }
         }
     }

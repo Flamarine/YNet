@@ -13,23 +13,15 @@ public abstract class AbstractFurnaceBlockMixin implements ItemProvider {
     @Override
     public int getItemInputCount(BlockView world, BlockPos pos, ItemStack itemStack) {
         AbstractFurnaceBlockEntity be = getBlockEntity(world, pos);
-        if (AbstractFurnaceBlockEntity.canUseAsFuel(itemStack)) {
-            // put in fuel slot
-            ItemStack stack = be.getInvStack(1);
-            if (stack.isEmpty()) {
-                return itemStack.getCount();
-            }
-            return stack.getMaxCount() - stack.getCount();
+        ItemStack stack =  be.getInvStack(AbstractFurnaceBlockEntity.canUseAsFuel(itemStack) ? 1 : 0);
+        // put in fuel slot
+        if (stack.isEmpty()) {
+            return itemStack.getCount();
         } else {
-            ItemStack stack = be.getInvStack(0);
-            if (stack.isEmpty()) {
-                return itemStack.getCount();
+            if (stack.getItem() == itemStack.getItem()) {
+                return Math.min(stack.getMaxCount() - stack.getCount(), itemStack.getCount());
             } else {
-                if (stack.getItem() == itemStack.getItem()) {
-                    return stack.getMaxCount() - stack.getCount();
-                } else {
-                    return 0;
-                }
+                return 0;
             }
         }
     }
@@ -40,14 +32,14 @@ public abstract class AbstractFurnaceBlockMixin implements ItemProvider {
         if (AbstractFurnaceBlockEntity.canUseAsFuel(itemStack)) {
             ItemStack stack = be.getInvStack(1);
             if (stack.isEmpty()) {
-                be.setInvStack(1, itemStack);
+                be.setInvStack(1, new ItemStack(itemStack.getItem(), itemStack.getCount()));
             } else {
                 stack.setCount(itemStack.getCount() + stack.getCount());
             }
         } else {
             ItemStack stack = be.getInvStack(0);
             if (stack.isEmpty()) {
-                be.setInvStack(0, itemStack);
+                be.setInvStack(0, new ItemStack(itemStack.getItem(), itemStack.getCount()));
             } else {
                 stack.setCount(itemStack.getCount() + stack.getCount());
             }
@@ -56,7 +48,7 @@ public abstract class AbstractFurnaceBlockMixin implements ItemProvider {
 
     @Override
     public ItemStack[] getItemOutputStacks(BlockView world, BlockPos pos) {
-        return new ItemStack[]{getBlockEntity(world, pos).getInvStack(2)};
+        return new ItemStack[]{ getBlockEntity(world, pos).getInvStack(2) };
     }
 
     @Override

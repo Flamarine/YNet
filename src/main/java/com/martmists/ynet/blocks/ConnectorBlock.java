@@ -3,6 +3,8 @@ package com.martmists.ynet.blocks;
 import com.martmists.ynet.YNetMod;
 import com.martmists.ynet.api.BaseProvider;
 import com.martmists.ynet.blockentities.ConnectorBlockEntity;
+import com.martmists.ynet.blockentities.ControllerBlockEntity;
+import com.martmists.ynet.network.Channel;
 import com.martmists.ynet.network.Network;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -78,6 +80,25 @@ public class ConnectorBlock extends ConnectingBlock implements BlockEntityProvid
             Block block = neighborState.getBlock();
             return state.with(FACING_PROPERTIES.get(facing), block == YNetMod.CONTROLLER || block instanceof BaseProvider)
                     .with(CABLE_FACING_PROPERTIES.get(facing), block == this || block == YNetMod.CABLE);
+        }
+    }
+
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+        super.neighborUpdate(state, world, pos, block, neighborPos, moved);
+        if (!(block instanceof BaseProvider)) {
+            return;
+        }
+
+        for (Map.Entry<BlockPos, Network> e : Network.networks.entrySet()) {
+            if (e.getValue().connectors.contains(pos)) {
+                ControllerBlockEntity be = (ControllerBlockEntity)world.getBlockEntity(e.getKey());
+                for (Channel c : be.channels) {
+                    if (c != null) {
+                        c.connectorSettings.removeIf(s -> s == null || s.providerPos == neighborPos);
+                    }
+                }
+            }
         }
     }
 

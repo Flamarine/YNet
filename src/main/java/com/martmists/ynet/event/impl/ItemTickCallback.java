@@ -39,7 +39,7 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
                 .forEach(config -> {
                     ItemProvider p = (ItemProvider) world.getBlockState(config.providerPos).getBlock();
                     for (ItemStack s : p.getItemOutputStacks(world, config.providerPos)) {
-                        entries.add(new Entry(config.providerPos, p, s));
+                        entries.add(new Entry(config.providerPos, p, new ItemStack(s.getItem(), s.getCount())));
                     }
                 });
 
@@ -52,8 +52,9 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
         Map<ItemProvider, Integer> itemsStored = new HashMap<>();
         Map<ItemProvider, Integer> itemsRemoved = new HashMap<>();
 
+        boolean found = true;
         while (!entries.isEmpty()) {
-            if (e.items.getCount() <= 0) {
+            if (e.items.getCount() <= 0 || !found) {
                 try {
                     e = entries.get(1);
                 } catch (IndexOutOfBoundsException exc) {
@@ -62,14 +63,14 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
                 entries.remove(0);
             }
 
+            found = false;
+
             itemsRemoved.putIfAbsent(e.provider, 0);
 
             if (itemsRemoved.get(e.provider) >= 64) {
-                e.items.setCount(0);
                 continue;
             }
 
-            boolean found = false;
             for (ConnectorConfiguration receiverConfig : takeItems) {
                 ItemProvider receiver = (ItemProvider) world.getBlockState(receiverConfig.providerPos).getBlock();
                 itemsStored.putIfAbsent(receiver, 0);
@@ -79,7 +80,7 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
                                 64 - itemsStored.get(receiver),
                                 64 - itemsRemoved.get(e.provider)));
 
-                if (receiverConfig.filter != null) {
+                if (receiverConfig.filter.length != 0) {
                     Entry fe = e;
                     if (Arrays.stream(receiverConfig.filter).noneMatch((obj) -> obj == fe.items.getItem())) {
                         continue;
@@ -91,16 +92,11 @@ public class ItemTickCallback implements ProviderTickCallback<ItemProvider> {
                     itemsRemoved.put(e.provider, itemsRemoved.get(e.provider) + count);
                     int finalCount = e.items.getCount() - count;
                     e.items.setCount(count);
+                    receiver.inputItem(world, receiverConfig.providerPos, e.items);
                     e.provider.outputItem(world, e.pos, e.items);
-                    receiver.inputItem(world, e.pos, e.items);
                     e.items.setCount(finalCount);
                     found = true;
                 }
-            }
-
-            if (!found) {
-                // Remove next
-                e.items.setCount(0);
             }
         }
     }

@@ -15,7 +15,7 @@ public class Network {
     public static Map<Class<?>, Set<Class<? extends BaseProvider>>> tMap = new HashMap<>();
     public Set<BlockPos> cables;
     public Set<BlockPos> connectors;
-    private BlockPos controller;
+    public BlockPos controller;
 
     public synchronized static void removeCable(BlockView world, BlockPos p) {
         for (Map.Entry<BlockPos, Network> e : networks.entrySet()) {
