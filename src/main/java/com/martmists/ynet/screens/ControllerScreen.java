@@ -70,7 +70,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 Position.of(channelSettingsPanel, 40, 20),
                 Size.of(100, 14)
         );
-        channelTypeButton.setLabel("Disabled");
+        channelTypeButton.setLabel(new TranslatableText("ynet.disabled"));
         channelTypeButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
             if (channelSettingsPanel.getZ() != 100) {
                 return;
@@ -96,7 +96,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelButtons[channelNum].overrideStyle("background.on", YNetMod.COLOR_MAP.get(nextType));
                 channelButtons[channelNum].overrideStyle("background.off", YNetMod.COLOR_MAP.get(nextType));
             }
-            channelTypeButton.setLabel(YNetMod.PROVIDER_NAMES.getOrDefault(nextType, "Disabled").replace(":", "."));
+            channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.getOrDefault(nextType, "ynet.disabled").replace(":", ".")));
             sourceBlockEntity.markDirty();
         });
 
@@ -139,7 +139,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                     throw new IllegalStateException("Unexpected value: " + currentConfig.state);
             }
             currentConfig.state = nextState;
-            stateButton.setLabel(nextState.name());
+            stateButton.setLabel(new TranslatableText("ynet." + nextState.name().toLowerCase()));
             if (currentConfig.state != ConnectorConfiguration.State.DISABLED) {
                 configButtonClicked.setLabel((currentConfig.state == ConnectorConfiguration.State.INPUT) ? "I" : "O");
                 int inputColor = 0xff0077be;
@@ -147,6 +147,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 configButtonClicked.overrideStyle("background.on", (currentConfig.state == ConnectorConfiguration.State.INPUT) ? inputColor : outputColor);
                 configButtonClicked.overrideStyle("background.off", (currentConfig.state == ConnectorConfiguration.State.INPUT) ? inputColor : outputColor);
             } else {
+                configButtonClicked.setLabel("");
                 configButtonClicked.overrideStyle("background.on", 0xff8b8b8b);
                 configButtonClicked.overrideStyle("background.off", 0xff8b8b8b);
             }
@@ -171,7 +172,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                 channelSettingsPanel.setLabel("Channel " + (f + 1));
 
                 if (currentChannel != null) {
-                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.getOrDefault(currentChannel.providerType, "Disabled").replace(":", ".")));
+                    channelTypeButton.setLabel(new TranslatableText(YNetMod.PROVIDER_NAMES.getOrDefault(currentChannel.providerType, "ynet.disabled").replace(":", ".")));
                 }
             });
 
@@ -228,6 +229,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                         button.overrideStyle("background.on", (config.state == ConnectorConfiguration.State.INPUT) ? inputColor : outputColor);
                         button.overrideStyle("background.off", (config.state == ConnectorConfiguration.State.INPUT) ? inputColor : outputColor);
                     } else {
+                        button.setLabel("");
                         button.overrideStyle("background.on", 0xff8b8b8b);
                         button.overrideStyle("background.off", 0xff8b8b8b);
                     }
@@ -241,7 +243,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                             currentConfig.providerPos = p;
                             sourceBlockEntity.channels[k].connectorSettings.add(currentConfig);
                         }
-                        stateButton.setLabel(currentConfig.state.name());
+                        stateButton.setLabel(new TranslatableText("ynet." + currentConfig.state.name().toLowerCase()));
                         connectorSettingsPanel.setZ(100);
                         channelSettingsPanel.setZ(0);
                         configButtonClicked = button;

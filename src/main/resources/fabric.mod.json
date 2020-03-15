@@ -8,7 +8,7 @@
     "Martmists"
   ],
   "license": "MIT",
-  "icon": "assets/lgr/icon.png",
+  "icon": "assets/ynet/icon.png",
   "entrypoints": {
     "main": [
       "com.martmists.ynet.YNetMod"

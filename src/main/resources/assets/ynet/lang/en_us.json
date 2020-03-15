@@ -1,0 +1,11 @@
+{
+  "ynet.input": "Input",
+  "ynet.output": "Output",
+  "ynet.disabled": "Disabled",
+  "ynet.item": "Items",
+  "ynet.fluid": "Fluids",
+  "ynet.energy": "Energy",
+  "block.ynet.cable": "Cable",
+  "block.ynet.connector": "Connector",
+  "block.ynet.controller": "Controller"
+}

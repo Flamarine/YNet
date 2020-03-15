@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "ynet:block/controller", "x": 90 },
+    "facing=up": { "model": "ynet:block/controller", "x": 270 },
+    "facing=north": { "model": "ynet:block/controller" },
+    "facing=south": { "model": "ynet:block/controller", "y": 180 },
+    "facing=west": { "model": "ynet:block/controller", "y": 270 },
+    "facing=east": { "model": "ynet:block/controller", "y": 90 }
+  }
+}
