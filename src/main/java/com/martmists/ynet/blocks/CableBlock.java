@@ -57,7 +57,10 @@ public class CableBlock extends ConnectingBlock {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+        long tStart = System.nanoTime();
         Network.addCable(world, pos);
+        long tEnd = System.nanoTime();
+        System.out.println(tEnd - tStart + "ns");
     }
 
     public BlockState withConnectionProperties(BlockView world, BlockPos pos) {

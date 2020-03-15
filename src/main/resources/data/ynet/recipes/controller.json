@@ -1,0 +1,20 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " C ",
+    "CDC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "ynet:connector"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    }
+  },
+  "result": {
+    "item": "ynet:controller",
+    "count": 1
+  }
+}

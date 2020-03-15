@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import spinnery.client.TextRenderer;
 import spinnery.common.BaseContainerScreen;
 import spinnery.widget.*;
 import spinnery.widget.api.Position;
@@ -46,14 +47,14 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         WPanel mainPanel = mainInterface.createChild(
                 WPanel.class,
                 Position.of(0, 0, 0),
-                Size.of(320, 155)
+                Size.of(338, 163)
         );
         mainPanel.center();
 
         WPanel channelSettingsPanel = mainPanel.createChild(
                 WPanel.class,
                 Position.of(mainPanel, 169, 5, 100),
-                Size.of(145, 73)
+                Size.of(163, 73)
         );
 
         channelNum = 0;
@@ -68,7 +69,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         WButton channelTypeButton = channelSettingsPanel.createChild(
                 WButton.class,
                 Position.of(channelSettingsPanel, 40, 20),
-                Size.of(100, 14)
+                Size.of(118, 14)
         );
         channelTypeButton.setLabel(new TranslatableText("ynet.disabled"));
         channelTypeButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
@@ -103,7 +104,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         WPanel connectorSettingsPanel = mainPanel.createChild(
                 WPanel.class,
                 Position.of(mainPanel, 169, 5, 0),
-                Size.of(145, 73)
+                Size.of(163, 73)
         );
         connectorSettingsPanel.setLabel("Connector settings");
         connectorSettingsPanel.createChild(
@@ -114,7 +115,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         WButton stateButton = connectorSettingsPanel.createChild(
                 WButton.class,
                 Position.of(connectorSettingsPanel, 40, 20),
-                Size.of(100, 14)
+                Size.of(118, 14)
         );
         stateButton.setOnMouseClicked((WButton w, int mouseX, int mouseY, int mouseButton) -> {
             if (currentChannel == null ||
@@ -185,7 +186,7 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
         WVerticalScrollableContainer blockList = mainPanel.createChild(
                 WVerticalScrollableContainer.class,
                 Position.of(mainPanel, 4, 20),
-                Size.of(163, 130)
+                Size.of(163, 138)
         );
 
         Set<BlockPos> blocksToShow = sourceBlockEntity.network.getProviders(player.world);
@@ -197,12 +198,16 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                     Size.of(154, 25)
             );
             i++;
-            WItem item = row.createChild(
-                    WItem.class,
+            WTooltipItem item = row.createChild(
+                    WTooltipItem.class,
                     Position.of(row, 4, 4),
                     Size.of(16, 16)
             );
-            item.setItemStack(new ItemStack(player.world.getBlockState(p).getBlock().asItem()));
+            item.setStack(new ItemStack(player.world.getBlockState(p).getBlock().asItem()));
+            String t = String.format("%d %d %d", p.getX(), p.getY(), p.getZ());
+            item.updateWidgets();
+            item.updateHidden(true);
+            item.tooltipText.setText(t);
 
             for (int j = 0; j < 9; j++) {
                 int k = j;
@@ -253,6 +258,6 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             }
         }
 
-        WSlot.addPlayerInventory(Position.of(mainPanel, 170, 83, 1), Size.of(16, 16), mainInterface);
+        WSlot.addPlayerInventory(Position.of(mainPanel, 170, 83, 1), Size.of(18, 18), mainInterface);
     }
 }

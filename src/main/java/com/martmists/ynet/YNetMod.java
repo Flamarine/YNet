@@ -106,7 +106,7 @@ public class YNetMod implements ModInitializer {
             packetContext.getTaskQueue().execute(() -> {
                 ControllerBlockEntity be = (ControllerBlockEntity) packetContext.getPlayer().world.getBlockEntity(pos);
                 be.fromTag(tag);
-                be.markDirty();
+                be.sMarkDirty();
             });
         });
     }

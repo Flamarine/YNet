@@ -81,10 +81,6 @@ public abstract class LootableContainerBlockMixin implements ItemProvider {
                     return;
                 }
             }
-            if (stack.isEmpty()) {
-                stacks.set(i, new ItemStack(itemStack.getItem(), outputCount));
-                return;
-            }
             i++;
         }
     }

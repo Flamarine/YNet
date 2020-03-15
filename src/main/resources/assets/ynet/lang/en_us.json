@@ -5,6 +5,7 @@
   "ynet.item": "Items",
   "ynet.fluid": "Fluids",
   "ynet.energy": "Energy",
+  "itemGroup.ynet.items": "YNet Blocks",
   "block.ynet.cable": "Cable",
   "block.ynet.connector": "Connector",
   "block.ynet.controller": "Controller"

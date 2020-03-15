@@ -1,0 +1,23 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "LGL",
+    "GCG",
+    "LGL"
+  ],
+  "key": {
+    "C": {
+      "item": "ynet:cable"
+    },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "result": {
+    "item": "ynet:connector",
+    "count": 8
+  }
+}
