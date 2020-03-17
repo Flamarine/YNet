@@ -12,6 +12,11 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modCompileOnly "TechReborn:${project.tr_slug}"
+
+    if (project.name == "1.16") {
+        implementation project(":compat:1.16")
+    }
+
     modImplementation "com.github.vini2003:spinnery:${project.spinnery_version}"
 }
 

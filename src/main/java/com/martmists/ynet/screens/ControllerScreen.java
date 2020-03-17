@@ -199,14 +199,14 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
             i++;
             WCustomTooltipItem item = row.createChild(
                     WCustomTooltipItem.class,
-                    Position.of(row, 4, 4),
+                    Position.of(row, 4, 4, 2),
                     Size.of(16, 16)
             );
             item.setStack(new ItemStack(player.world.getBlockState(p).getBlock().asItem()));
             String t = String.format("%d %d %d", p.getX(), p.getY(), p.getZ());
             item.updateWidgets();
             item.updateHidden(true);
-            item.tooltipText.setText(t);
+            item.setText(t);
 
             for (int j = 0; j < 9; j++) {
                 int k = j;
