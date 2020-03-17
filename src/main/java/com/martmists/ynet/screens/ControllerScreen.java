@@ -12,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
-import spinnery.client.TextRenderer;
 import spinnery.common.BaseContainerScreen;
 import spinnery.widget.*;
 import spinnery.widget.api.Position;
@@ -198,8 +197,8 @@ public class ControllerScreen extends BaseContainerScreen<ControllerContainer> {
                     Size.of(154, 25)
             );
             i++;
-            WTooltipItem item = row.createChild(
-                    WTooltipItem.class,
+            WCustomTooltipItem item = row.createChild(
+                    WCustomTooltipItem.class,
                     Position.of(row, 4, 4),
                     Size.of(16, 16)
             );
