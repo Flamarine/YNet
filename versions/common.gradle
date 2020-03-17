@@ -19,6 +19,7 @@ dependencies {
     }
 
     modImplementation "com.github.vini2003:spinnery:${project.spinnery_version}"
+    include "com.github.vini2003:spinnery:${project.spinnery_version}"
 }
 
 repositories {

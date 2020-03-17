@@ -83,10 +83,6 @@ public class GenericMachineBlockMixin implements ItemProvider {
                     return;
                 }
             }
-            if (stack.isEmpty()) {
-                stacks.set(i, new ItemStack(itemStack.getItem(), outputCount));
-                return;
-            }
             i++;
         }
     }
