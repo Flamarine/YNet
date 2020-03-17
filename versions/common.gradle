@@ -15,6 +15,7 @@ dependencies {
 
     if (project.name == "1.16") {
         implementation project(":compat:1.16")
+        include project(":compat:1.16")
     }
 
     modImplementation "com.github.vini2003:spinnery:${project.spinnery_version}"
