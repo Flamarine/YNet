@@ -12,8 +12,15 @@ buildscript {
 }
 
 apply plugin: 'fabric-loom'
-apply plugin: 'java'
 apply plugin: "idea"
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
+    }
+}
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -35,4 +42,6 @@ repositories {
 }
 
 setBuildDir("../../build")
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 archivesBaseName = "internal-compat-${project.name}"
