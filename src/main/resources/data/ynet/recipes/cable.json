@@ -2,7 +2,7 @@
   "type": "crafting_shaped",
   "pattern": [
     "SSS",
-    "SRS",
+    "IRI",
     "SSS"
   ],
   "key": {
@@ -11,10 +11,13 @@
     },
     "R": {
       "item": "minecraft:redstone_block"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
     }
   },
   "result": {
     "item": "ynet:cable",
-    "count": 64
+    "count": 12
   }
 }
