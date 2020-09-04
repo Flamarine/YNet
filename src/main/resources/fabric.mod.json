@@ -11,15 +11,19 @@
   "icon": "assets/ynet/icon.png",
   "entrypoints": {
     "main": [
-      "com.martmists.ynet.YNetMod"
+      {
+        "value": "com.martmists.ynet.YNetMod",
+        "adapter": "kotlin"
+      }
     ],
     "client": [
-      "com.martmists.ynet.YNetModClient"
+      {
+        "value": "com.martmists.ynet.YNetModClient",
+        "adapter": "kotlin"
+      }
     ]
   },
   "mixins": [
-    "mod.mixins.json",
-    "tr.mod.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.4.0"

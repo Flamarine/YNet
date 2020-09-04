@@ -1,11 +1,22 @@
 {
-  "ynet.input": "Input",
-  "ynet.output": "Output",
-  "ynet.disabled": "Disabled",
-  "ynet.item": "Items",
-  "ynet.fluid": "Fluids",
-  "ynet.energy": "Energy",
+  "ynet.ui.mode": "Mode",
+  "ynet.ui.mode.insert": "Insert",
+  "ynet.ui.extract": "Extract",
+  "ynet.ui.disabled": "Disabled",
+
+  "ynet.ui.type": "Type",
+  "ynet.ui.item": "Items",
+  "ynet.ui.fluid": "Fluids",
+  "ynet.ui.energy": "Tech Reborn Energy",
+
+  "ynet.ui.priority": "Priority (TODO)",
+
+  "ynet.ui.block": "Block Config",
+  "ynet.ui.controller": "Controller Configuration",
+  "ynet.ui.channel.index": "Channel %d",
+
   "itemGroup.ynet.items": "YNet Blocks",
+
   "block.ynet.cable": "Cable",
   "block.ynet.connector": "Connector",
   "block.ynet.controller": "Controller"
