@@ -7,7 +7,7 @@ import net.minecraft.world.World
 
 object DisabledType : Type {
     override val identifier = Identifier("ynet:disabled")
-    override val color = 0x00_00_00_00
+    override val color = 0x000000
     override val canFilter = false
 
     override fun appliesTo(world: World, pos: BlockPos) = false

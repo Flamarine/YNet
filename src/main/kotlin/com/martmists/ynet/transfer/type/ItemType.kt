@@ -14,7 +14,6 @@ object ItemType : Type {
     override fun appliesTo(world: World, pos: BlockPos): Boolean {
         val canInsert = ItemAttributes.INSERTABLE.getFirstOrNull(world, pos) != null
         val canExtract = ItemAttributes.EXTRACTABLE.getFirstOrNull(world, pos) != null
-        println("canInsert: $canInsert | canExtract: $canExtract")
         return canInsert || canExtract
     }
 

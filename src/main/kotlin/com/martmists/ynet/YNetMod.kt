@@ -20,14 +20,12 @@ import net.minecraft.util.registry.Registry
 import com.martmists.ynet.blockentity.ControllerBlockEntity
 import com.martmists.ynet.screen.ControllerConfigScreenHandler
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import java.util.function.Supplier
 
 object YNetMod : ModInitializer {
-    // === YNET TYPES ===
-    val ITEM_TYPE = YNetRegistry.register(ItemType, ItemTransferHandler)
-
     // === BLOCKS ===
     val YNET_GROUP = FabricItemGroupBuilder.build(Identifier("ynet:items")) { ItemStack(Registry.ITEM[Identifier("ynet:controller")]) }
     val CABLE = register("cable", CableBlock(AbstractBlock.Settings.of(Material.METAL)))
@@ -54,7 +52,6 @@ object YNetMod : ModInitializer {
 
     internal fun shouldConnect(world: World, pos: BlockPos): Boolean {
         return world.getBlockState(pos).block === CONTROLLER || YNetRegistry.getTypes().any {
-            println("Type: $it")
             it.appliesTo(world, pos)
         }
     }
@@ -65,6 +62,13 @@ object YNetMod : ModInitializer {
     }
 
     override fun onInitialize() {
-
+        FabricLoader.getInstance().getEntrypoints("ynet:support", Runnable::class.java).forEach {
+            try {
+                it.run()
+            } catch (e: Exception) {
+                println("An error occurred during ynet:support entrypoint $it")
+                e.printStackTrace()
+            }
+        }
     }
 }

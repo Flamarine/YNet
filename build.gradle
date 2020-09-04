@@ -16,6 +16,13 @@ plugins {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = '1.8'
+	}
+}
+
+
 archivesBaseName = "${project.mod_name}-${project.mod_version}+${project.minecraft_version}"
 
 dependencies {
@@ -29,6 +36,7 @@ dependencies {
 	modApi ("alexiil.mc.lib:libblockattributes-fatjar_devonly:0.7.0") {
 		transitive = false
 	}
+	modApi ("teamreborn:energy:${project.tr_energy_version}")
 	modImplementation ("com.github.vini2003:blade:${project.blade_version}")
 
 	include "alexiil.mc.lib:libblockattributes-all:0.7.0"

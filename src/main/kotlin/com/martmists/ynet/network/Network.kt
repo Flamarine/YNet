@@ -47,6 +47,7 @@ class Network(val be: ControllerBlockEntity) {
             })
             channels[index] = new
         }
+        be.markDirty()
     }
 
     private fun getNeighbors(pos: BlockPos) = listOf(pos.up(), pos.down(), pos.north(), pos.east(), pos.south(), pos.west()).map { it.asLong() }
@@ -58,12 +59,9 @@ class Network(val be: ControllerBlockEntity) {
             val next = toScan.elementAt(0)
             toScan.remove(next)
 
-            println("Removed $next")
-
             for (side in getNeighbors(BlockPos.fromLong(next))) {
                 if (side !in scanned) {
                     scanned.add(side)
-                    println("Marking $side")
 
                     val b = world.getBlockState(BlockPos.fromLong(side)).block
                     if (b === YNetMod.CABLE) {
@@ -84,8 +82,12 @@ class Network(val be: ControllerBlockEntity) {
             rescan()
             didInit = true
         }
+
+        if (world.isClient) return
+
         channels.forEach {
             if (it.type != DisabledType) {
+                println("ticking channel $it of type ${it.type}")
                 YNetRegistry.getHandler(it.type)?.tick(it as Channel<Type>)
             }
         }
@@ -105,12 +107,8 @@ class Network(val be: ControllerBlockEntity) {
             }
         }
 
-        println(allBlocks)
-
-        return allBlocks.map {
-            println(BlockPos.fromLong(it))
-            println(world.getBlockState(BlockPos.fromLong(it)))
-            world.getBlockEntity(BlockPos.fromLong(it))!!
+        return allBlocks.mapNotNull {
+            world.getBlockEntity(BlockPos.fromLong(it))
         }.toList()
     }
 

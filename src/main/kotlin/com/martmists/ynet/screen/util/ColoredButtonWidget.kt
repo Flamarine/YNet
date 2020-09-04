@@ -1,4 +1,4 @@
-package com.martmists.ynet.util
+package com.martmists.ynet.screen.util
 
 import com.github.vini2003.blade.Blade
 import com.github.vini2003.blade.client.data.PartitionedTexture
@@ -11,7 +11,6 @@ import com.github.vini2003.blade.common.utilities.Networks
 import com.github.vini2003.blade.common.widget.OriginalWidgetCollection
 import com.github.vini2003.blade.common.widget.WidgetCollection
 import com.github.vini2003.blade.common.widget.base.AbstractWidget
-import com.github.vini2003.blade.common.widget.base.ButtonWidget
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.client.util.math.MatrixStack

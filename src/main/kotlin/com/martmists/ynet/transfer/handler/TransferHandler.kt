@@ -14,7 +14,9 @@ interface TransferHandler<T: Type, D: TransferData<T>, O: TransferProxy<T, D>> {
         val data = getData()
 
         val extract = blocks.filter { it.mode == InteractionMode.EXTRACT }.sortedByDescending { it.priority }.toMutableList()
+        println("Extracting from: $extract")
         val insert = blocks.filter { it.mode == InteractionMode.INSERT }.toMutableList()
+        println("Inserting into: $insert")
 
         for (ex in extract) {
             if (!ex.canExtract(data)) {

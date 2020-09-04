@@ -1,12 +1,12 @@
 package com.martmists.ynet.blockentity
 
 import com.martmists.ynet.YNetMod
-import com.martmists.ynet.util.YNetRegistry
 import com.martmists.ynet.network.Channel
 import com.martmists.ynet.network.ConfiguredBlockEntity
 import com.martmists.ynet.network.InteractionMode
 import com.martmists.ynet.network.Network
 import com.martmists.ynet.transfer.type.DisabledType
+import com.martmists.ynet.util.YNetRegistry
 import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
@@ -28,6 +28,7 @@ class ControllerBlockEntity : BlockEntity(YNetMod.CONTROLLER_BE), Tickable {
 
     override fun fromTag(state: BlockState, tag: CompoundTag) {
         super.fromTag(state, tag)
+        println("fromTag: $tag")
         val data = tag.getCompound("controllerData")
         val channels = data.getList("channels", NbtType.COMPOUND)
         channels.forEachIndexed { index, tag ->
@@ -38,7 +39,7 @@ class ControllerBlockEntity : BlockEntity(YNetMod.CONTROLLER_BE), Tickable {
 
             val channel = Channel(this.network, mutableListOf(), type ?: DisabledType)
 
-            if (channel.type == DisabledType) return@forEachIndexed;
+            if (channel.type == DisabledType) return@forEachIndexed
 
             for (block in blocks) {
                 block as CompoundTag
@@ -52,7 +53,7 @@ class ControllerBlockEntity : BlockEntity(YNetMod.CONTROLLER_BE), Tickable {
                 channel.connectedBlocks.add(cbe)
             }
 
-            network.channels[index] = channel;
+            network.channels[index] = channel
         }
     }
 
@@ -83,6 +84,7 @@ class ControllerBlockEntity : BlockEntity(YNetMod.CONTROLLER_BE), Tickable {
         }
         data.put("channels", channels)
         tag.put("controllerData", data)
+        println("toTag: $tag")
         return tag
     }
 }

@@ -21,11 +21,23 @@
         "value": "com.martmists.ynet.YNetModClient",
         "adapter": "kotlin"
       }
+    ],
+    "ynet:support": [
+      {
+        "value": "com.martmists.ynet.support.VanillaSupport",
+        "adapter": "kotlin"
+      },
+      {
+        "value": "com.martmists.ynet.support.RebornEnergySupport",
+        "adapter": "kotlin"
+      }
     ]
   },
   "mixins": [
   ],
   "depends": {
+    "libblockattributes": "*",
+    "blade": "*",
     "fabricloader": ">=0.4.0"
   },
   "suggests": {

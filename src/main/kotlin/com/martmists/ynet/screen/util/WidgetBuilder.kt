@@ -1,4 +1,4 @@
-package com.martmists.ynet.util
+package com.martmists.ynet.screen.util
 
 import com.github.vini2003.blade.common.data.Color
 import com.github.vini2003.blade.common.data.Position
@@ -7,9 +7,7 @@ import com.github.vini2003.blade.common.handler.BaseScreenHandler
 import com.github.vini2003.blade.common.widget.WidgetCollection
 import com.github.vini2003.blade.common.widget.base.*
 import net.minecraft.block.Block
-import net.minecraft.client.gui.widget.TextFieldWidget
 import net.minecraft.item.ItemStack
-import net.minecraft.screen.ScreenHandler
 import net.minecraft.text.Text
 
 object WidgetBuilder {
@@ -47,13 +45,11 @@ object WidgetBuilder {
             return p
         }
 
-        fun button(onClick: (ButtonWidget) -> Unit) = button(onClick) { }
         fun button(onClick: (ButtonWidget) -> Unit, callback: SingleBuilder<ButtonWidget>.() -> Unit): ButtonWidget {
             val b = ButtonWidget(onClick)
             buildInner(callback, b)
             return b
         }
-        fun button(color: Color, onClick: (ColoredButtonWidget) -> Unit) = button(color, onClick) { }
         fun button(color: Color, onClick: (ColoredButtonWidget) -> Unit, callback: SingleBuilder<ColoredButtonWidget>.() -> Unit): ColoredButtonWidget {
             val b = ColoredButtonWidget(onClick, color)
             buildInner(callback, b)
@@ -66,7 +62,6 @@ object WidgetBuilder {
             return l
         }
 
-        fun text(txt: Text) = text(txt) { }
         fun text(txt: Text, callback: SingleBuilder<TextWidget>.() -> Unit): TextWidget {
             val t = TextWidget()
             t.text = txt
@@ -74,22 +69,21 @@ object WidgetBuilder {
             return t
         }
 
-        fun icon(b: Block) = icon(b) { }
-        fun icon(b: Block, callback: SingleBuilder<ItemWidget>.() -> Unit): ItemWidget {
-            val i = ItemWidget()
-            i.stack = ItemStack(b)
+        fun icon(b: Block, text: Text, callback: SingleBuilder<CustomTooltipItemWidget>.() -> Unit): CustomTooltipItemWidget {
+            val i = CustomTooltipItemWidget(ItemStack(b), text)
             buildInner(callback, i)
             return i
         }
     }
 
     open class SingleBuilder<T : AbstractWidget>(open val root: T) {
+        fun relativePosition(x: Number, y: Number) = position(Position.of(root.parent!!, x, y))
+        fun position(x: Number, y: Number) = position(Position.of(x, y))
         fun position(pos: Position) {
             root.position = pos
         }
 
-        fun relativePosition(x: Number, y: Number) = position(Position.of(root.parent!!, x, y))
-
+        fun size(width: Number, height: Number) = size(Size.of(width, height))
         fun size(size: Size) {
             root.size = size
         }
