@@ -1,13 +1,14 @@
 {
   "ynet.ui.mode": "Mode",
   "ynet.ui.mode.insert": "Insert",
-  "ynet.ui.extract": "Extract",
-  "ynet.ui.disabled": "Disabled",
+  "ynet.ui.mode.extract": "Extract",
+  "ynet.ui.mode.disabled": "Disabled",
 
   "ynet.ui.type": "Type",
-  "ynet.ui.item": "Items",
-  "ynet.ui.fluid": "Fluids",
-  "ynet.ui.energy": "Tech Reborn Energy",
+  "ynet.ui.type.disabled": "Disabled",
+  "ynet.ui.type.item": "Items",
+  "ynet.ui.type.fluid": "Fluids",
+  "ynet.ui.type.energy": "TR Energy",
 
   "ynet.ui.priority": "Priority (TODO)",
 

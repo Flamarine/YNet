@@ -29,7 +29,9 @@ class ControllerConfigScreenHandler(syncId: Int, player: PlayerEntity, pos: Bloc
     val be = player.world.getBlockEntity(pos) as ControllerBlockEntity
     var currentBlockSet = false
 
-    lateinit var currentChannel: Channel<*>
+    var channelIndex = -1
+    val currentChannel: Channel<*>
+        get() = be.network.channels[channelIndex]
     lateinit var currentBlock: ConfiguredBlockEntity
     lateinit var selectedButton: AbstractWidget
 
@@ -122,9 +124,8 @@ class ControllerConfigScreenHandler(syncId: Int, player: PlayerEntity, pos: Bloc
                 rpcButton = button ({ channelTypeButton ->
                     val types = YNetRegistry.getTypes().toMutableList().also { it.add(0, DisabledType) }
                     val newChannel = Channel(currentChannel.network, currentChannel.connectedBlocks.map { ConfiguredBlockEntity(it.controller, it.be, 0, InteractionMode.DISABLED, mutableListOf()) }.toMutableList(), types.next(currentChannel.type))
-                    be.network.channels[be.network.channels.indexOf(currentChannel)] = newChannel
-                    currentChannel = newChannel
-                    channelTypeButton.label = TranslatableText(newChannel.type.identifier.toString().replace("ynet:", "ynet.ui."))
+                    be.network.channels[channelIndex] = newChannel
+                    channelTypeButton.label = TranslatableText(newChannel.type.identifier.toString().replace("ynet:", "ynet.ui.type."))
                     (selectedButton as ColoredButtonWidget).color = Color.ofRGB(newChannel.type.color)
                     be.markDirty()
                 }) {
@@ -177,8 +178,8 @@ class ControllerConfigScreenHandler(syncId: Int, player: PlayerEntity, pos: Bloc
 
                 for (x in 0 until 10) {
                     button(Color.ofRGB(be.network.channels[x].type.color), {
-                        currentChannel = be.network.channels[x]
-                        rpcButton.label = TranslatableText(currentChannel.type.identifier.toString().replace("ynet:", "ynet.ui."))
+                        channelIndex = x
+                        rpcButton.label = TranslatableText(currentChannel.type.identifier.toString().replace("ynet:", "ynet.ui.type."))
                         rpcText.text = TranslatableText("ynet.ui.channel.index", x)
                         rightPanelEmpty.hidden = true
                         rightPanelChannel.hidden = false
@@ -282,6 +283,7 @@ class ControllerConfigScreenHandler(syncId: Int, player: PlayerEntity, pos: Bloc
                         }
                         filterInventory.setStack(slotNumber, ItemStack.EMPTY)
                     }
+                    be.markDirty()
                 }
                 return cursor
             }
@@ -298,6 +300,7 @@ class ControllerConfigScreenHandler(syncId: Int, player: PlayerEntity, pos: Bloc
                 copy.count = 1
                 filterInventory.setStack(index, copy)
                 currentBlock.filter.add(copy)
+                be.markDirty()
                 return cursor
             }
             else -> {

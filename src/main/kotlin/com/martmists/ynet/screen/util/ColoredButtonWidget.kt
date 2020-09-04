@@ -11,6 +11,7 @@ import com.github.vini2003.blade.common.utilities.Networks
 import com.github.vini2003.blade.common.widget.OriginalWidgetCollection
 import com.github.vini2003.blade.common.widget.WidgetCollection
 import com.github.vini2003.blade.common.widget.base.AbstractWidget
+import com.martmists.ynet.ext.ofRGB
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.client.util.math.MatrixStack
@@ -25,15 +26,12 @@ class ColoredButtonWidget(private val clickAction: (ColoredButtonWidget) -> Unit
     var disabled: Boolean = false
 
     var label: Text? = null
-
-    override fun onAdded(original: OriginalWidgetCollection, immediate: WidgetCollection) {
-        super.onAdded(original, immediate)
-
+    init {
         synchronize.add(Networks.MOUSE_CLICK)
     }
 
     override fun onMouseClicked(x: Float, y: Float, button: Int) {
-        if (focused) {
+        if (focused || (!focused && handler != null && !handler!!.client)) {
             clickAction.invoke(this)
 
             playSound()
@@ -52,7 +50,7 @@ class ColoredButtonWidget(private val clickAction: (ColoredButtonWidget) -> Unit
         val texture = if (disabled) textureOff else if (focused) textureOnFocus else textureOn
 
         texture.draw(matrices, provider, position.x, position.y, size.width, size.height)
-        if (color == Color.of(0x000000)) {
+        if (color == Color.ofRGB(0x000000)) {
             Drawings.drawQuad(matrices, provider, Layers.flat(), position.x, position.y, size.width, size.height, color)
         }
 
