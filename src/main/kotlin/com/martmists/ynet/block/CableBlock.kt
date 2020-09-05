@@ -20,7 +20,7 @@ class CableBlock(settings: Settings) : ConnectingBlock(0.1875f, settings) {
         builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN)
     }
 
-    override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
+    override fun getPlacementState(ctx: ItemPlacementContext): BlockState {
         return withConnectionProperties(ctx.world, ctx.blockPos)
     }
 
@@ -46,10 +46,8 @@ class CableBlock(settings: Settings) : ConnectingBlock(0.1875f, settings) {
     }
 
     override fun onPlaced(world: World, pos: BlockPos, state: BlockState, placer: LivingEntity?, itemStack: ItemStack) {
-        val tStart = System.nanoTime()
+        super.onPlaced(world, pos, state, placer, itemStack)
         Network.addCable(pos)
-        val tEnd = System.nanoTime()
-        println((tEnd - tStart).toString() + "ns")
     }
 
     fun withConnectionProperties(world: BlockView, pos: BlockPos): BlockState {

@@ -7,10 +7,10 @@ import com.martmists.ynet.transfer.type.EnergyType
 
 object EnergyTransferHandler : TransferHandler<EnergyType, EnergyTransferData, EnergyTransferProxy> {
     override fun getProxy(cbe: ConfiguredBlockEntity): EnergyTransferProxy {
-        TODO("Not yet implemented")
+        return EnergyTransferProxy(cbe.be, cbe.mode, cbe.priority, listOf())
     }
 
     override fun getData(): EnergyTransferData {
-        TODO("Not yet implemented")
+        return EnergyTransferData()
     }
 }

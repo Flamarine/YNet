@@ -11,12 +11,14 @@ import com.github.vini2003.blade.common.utilities.Networks
 import com.github.vini2003.blade.common.widget.OriginalWidgetCollection
 import com.github.vini2003.blade.common.widget.WidgetCollection
 import com.github.vini2003.blade.common.widget.base.AbstractWidget
+import com.martmists.ynet.ext.eq
 import com.martmists.ynet.ext.ofRGB
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.sound.PositionedSoundInstance
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
+
 
 class ColoredButtonWidget(private val clickAction: (ColoredButtonWidget) -> Unit, var color: Color) : AbstractWidget() {
     var textureOn = PartitionedTexture(Blade.identifier("textures/widget/button_on.png"), 18F, 18F, 0.11111111111111111111F, 0.11111111111111111111F, 0.11111111111111111111F, 0.16666666666666666667F)
@@ -26,7 +28,10 @@ class ColoredButtonWidget(private val clickAction: (ColoredButtonWidget) -> Unit
     var disabled: Boolean = false
 
     var label: Text? = null
-    init {
+
+    override fun onAdded(original: OriginalWidgetCollection, immediate: WidgetCollection) {
+        super.onAdded(original, immediate)
+        println("Marking Sync: MOUSE_CLICK")
         synchronize.add(Networks.MOUSE_CLICK)
     }
 
@@ -50,7 +55,7 @@ class ColoredButtonWidget(private val clickAction: (ColoredButtonWidget) -> Unit
         val texture = if (disabled) textureOff else if (focused) textureOnFocus else textureOn
 
         texture.draw(matrices, provider, position.x, position.y, size.width, size.height)
-        if (color == Color.ofRGB(0x000000)) {
+        if (!color.eq(Color.ofRGB(0x000000))) {
             Drawings.drawQuad(matrices, provider, Layers.flat(), position.x, position.y, size.width, size.height, color)
         }
 

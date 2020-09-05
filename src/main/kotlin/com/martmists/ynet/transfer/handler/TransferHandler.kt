@@ -13,6 +13,7 @@ interface TransferHandler<T: Type, D: TransferData<T>, O: TransferProxy<T, D>> {
         val blocks = channel.connectedBlocks.map(::getProxy).toList()
         val data = getData()
 
+        println("All blocks: ${blocks.map { "${it.be.type} ${it.mode}" }}")
         val extract = blocks.filter { it.mode == InteractionMode.EXTRACT }.sortedByDescending { it.priority }.toMutableList()
         println("Extracting from: $extract")
         val insert = blocks.filter { it.mode == InteractionMode.INSERT }.toMutableList()
